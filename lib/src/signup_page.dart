@@ -222,8 +222,8 @@ class _SignupPageState extends State<SignupPage> {
       bool gender,
       BuildContext context) async {
     var response = await http.post(
-        Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
-        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
+        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
+        Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
         body: convert.jsonEncode({
           "name": name,
           "email": email,
