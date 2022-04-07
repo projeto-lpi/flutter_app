@@ -24,6 +24,7 @@ class _SignupPageState extends State<SignupPage> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  String usertype = "user";
   bool gender = false;
 
   bool _validate_email = false,
@@ -80,16 +81,45 @@ class _SignupPageState extends State<SignupPage> {
                               'Weight', _weightController, Icons.balance),
                           drawFormField(
                               'Height', _heightController, Icons.height),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: DropdownButton(
+                                value: usertype,
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                    fontFamily: "Cairo"),
+                                borderRadius: BorderRadius.circular(5),
+                                items: <DropdownMenuItem<String>>[
+                                  DropdownMenuItem(
+                                    child: Text("user".toUpperCase()),
+                                    value: "user",
+                                  ),
+                                  DropdownMenuItem(
+                                    child: Text("pt".toUpperCase()),
+                                    value: "pt",
+                                  ),
+                                  DropdownMenuItem(
+                                    child: Text("nutri".toUpperCase()),
+                                    value: "nutri",
+                                  ),
+                                ],
+                                onChanged: (String? selectedValue) {
+                                  setState(() {
+                                    usertype = selectedValue!;
+                                  });
+                                }),
+                          ),
                           Row(children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 15, left: 40),
+                              padding: const EdgeInsets.only(top: 0, left: 40),
                               child: Icon(
                                 Icons.female_rounded,
                                 color: Colors.red,
                               ),
                             ),
                             Transform.translate(
-                              offset: Offset(2.5, 7.5),
+                              offset: Offset(2.5, 0),
                               child: Switch(
                                 activeColor: Colors.red,
                                 value: gender,
@@ -101,14 +131,13 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(top: 15),
+                              padding: const EdgeInsets.only(top: 0),
                               child: Icon(
                                 Icons.male_rounded,
                                 color: Colors.red,
                               ),
                             ),
                           ]),
-                          SizedBox(height: 30),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ElevatedButton(
@@ -121,8 +150,16 @@ class _SignupPageState extends State<SignupPage> {
                                 var height = _heightController.text;
 
                                 if (_validate_email != true) {
-                                  await attemptSignUp(name, email, password,
-                                      age, weight, height, gender, context);
+                                  await attemptSignUp(
+                                      name,
+                                      email,
+                                      password,
+                                      age,
+                                      weight,
+                                      height,
+                                      gender,
+                                      usertype,
+                                      context);
                                   if (state == 1) {
                                     SnackBar(
                                       content:
@@ -192,6 +229,7 @@ class _SignupPageState extends State<SignupPage> {
                     return 'Invalid email';
                   }
                 }
+
                 return null;
               },
               controller: controller,
@@ -220,10 +258,11 @@ class _SignupPageState extends State<SignupPage> {
       String weight,
       String height,
       bool gender,
+      String user_type,
       BuildContext context) async {
     var response = await http.post(
-        Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
-        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
+        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
+        Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
         body: convert.jsonEncode({
           "name": name,
           "email": email,
@@ -231,7 +270,8 @@ class _SignupPageState extends State<SignupPage> {
           "gender": gender,
           "age": age,
           "weight": weight,
-          "height": height
+          "height": height,
+          "user_type": user_type
         }));
     var jsonResponse;
     if (response.statusCode == 200) {
