@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => SignupPage()));

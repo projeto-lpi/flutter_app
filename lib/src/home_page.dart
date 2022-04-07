@@ -11,6 +11,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
+import 'widgets/BottomNavBar.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
@@ -39,53 +41,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          title: DefaultTextStyle(
-            style: const TextStyle(
-              fontSize: 30.0,
-              fontFamily: 'Agne',
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+            title: DefaultTextStyle(
+              style: const TextStyle(
+                fontSize: 30.0,
+                fontFamily: 'Agne',
+              ),
+              child: AnimatedTextKit(
+                totalRepeatCount: 3,
+                repeatForever: false,
+                animatedTexts: [
+                  TypewriterAnimatedText(
+                    'Hello $name',
+                  ),
+                ],
+              ),
             ),
-            child: AnimatedTextKit(
-              totalRepeatCount: 3,
-              repeatForever: false,
-              animatedTexts: [
-                TypewriterAnimatedText(
-                  'Hello $name',
-                ),
-              ],
-              onTap: () {},
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0),
-      bottomSheet:
-          ButtonBar(alignment: MainAxisAlignment.spaceAround, children: [
-        IconButton(
-          icon: const Icon(Icons.home),
-          color: Colors.red,
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.directions_run),
-          color: Colors.red,
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.no_food),
-          color: Colors.red,
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.person_sharp),
-          color: Colors.red,
-          onPressed: () {},
-        ),
-      ]),
-      body: Column(children: [
-        Container(
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0),
+        bottomNavigationBar: BottomNavBar(),
+        body: Container(
           alignment: Alignment.center,
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
@@ -104,7 +85,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ]),
+      ),
     );
   }
 }
