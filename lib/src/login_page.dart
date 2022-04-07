@@ -31,8 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<int> attemptLogIn(
       String email, String password, BuildContext context) async {
     var response = await http.post(
-        Uri.parse('http://192.168.75.1:8081/api/v1/auth/login'), //global
-        // Uri.parse('http://192.168.56.1:8081/api/v1/auth/login'), //damss
+        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/login'), //global
+        Uri.parse('http://192.168.56.1:8081/api/v1/auth/login'), //damss
 
         body: convert.jsonEncode(
             <String, String>{"password": password, "email": email}));

@@ -32,6 +32,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
           label: 'Nutritioning',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.emoji_events, color: Colors.pink),
+          label: 'Challenges',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.person, color: Colors.pink),
           label: 'Profile',
         ),
