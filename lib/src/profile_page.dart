@@ -59,4 +59,14 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+  Widget buildImage() {
+    return const Align(
+      alignment: Alignment.center,
+      child: CircleAvatar(
+        radius: 64.0,
+        backgroundImage: AssetImage('assets/images/foto.jpg'),
+      ),
+    );
+  }
 }
