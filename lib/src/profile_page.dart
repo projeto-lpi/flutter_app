@@ -37,43 +37,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: InkWell(
-        child: Column(children: [
-          Container(
-            alignment: Alignment.center,
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/background_gradient.webp'),
-                  fit: BoxFit.cover),
-            ),
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                const SizedBox(height: 24),
-                Text(
-                  name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: TextStyle(color: Colors.black),
-                  textAlign: TextAlign.center,
-                )
-              ],
-            ),
-          )
-        ]),
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+        ),
+        body: Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/background_gradient.webp'),
+                fit: BoxFit.cover),
+          ),
+        ),
       ),
     );
   }

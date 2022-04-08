@@ -11,8 +11,6 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-import 'widgets/BottomNavBar.dart';
-
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
@@ -50,7 +48,6 @@ class _HomePageState extends State<HomePage> {
             title: DefaultTextStyle(
               style: const TextStyle(
                 fontSize: 30.0,
-                fontFamily: 'Agne',
               ),
               child: AnimatedTextKit(
                 totalRepeatCount: 3,
@@ -65,7 +62,6 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0),
-        bottomNavigationBar: BottomNavBar(),
         body: Container(
           alignment: Alignment.center,
           width: double.infinity,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ChallengesPage extends StatefulWidget {
-  ChallengesPage({Key? key}) : super(key: key);
+class TrainingPage extends StatefulWidget {
+  const TrainingPage({Key? key}) : super(key: key);
 
   @override
-  State<ChallengesPage> createState() => _ChallengesPageState();
+  State<TrainingPage> createState() => _TrainingPageState();
 }
 
-class _ChallengesPageState extends State<ChallengesPage> {
+class _TrainingPageState extends State<TrainingPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(

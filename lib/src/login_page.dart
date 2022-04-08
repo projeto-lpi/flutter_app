@@ -3,6 +3,7 @@
 import 'dart:convert' as convert;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:healthier_app/src/my_home_page.dart';
 import 'package:healthier_app/src/signup_page.dart';
 import 'package:healthier_app/src/home_page.dart';
 import 'package:http/http.dart' as http;
@@ -31,8 +32,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<int> attemptLogIn(
       String email, String password, BuildContext context) async {
     var response = await http.post(
-        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/login'), //global
-        Uri.parse('http://192.168.56.1:8081/api/v1/auth/login'), //damss
+        Uri.parse('http://192.168.75.1:8081/api/v1/auth/login'), //global
+        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/login'), //damss
 
         body: convert.jsonEncode(
             <String, String>{"password": password, "email": email}));
@@ -45,11 +46,11 @@ class _LoginPageState extends State<LoginPage> {
 
         var profilePicture = json.decode(response.body)['profilePicture'];
 
-        var type = json.decode(response.body)['userType'];
+        var type = json.decode(response.body)['user_type'];
 
         await storage.write(key: 'jwt', value: token);
         await storage.write(key: 'profilePicture', value: profilePicture);
-        await storage.write(key: 'userType', value: type);
+        await storage.write(key: 'user_type', value: type);
       }
       print('login ok');
       return 1;
@@ -124,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  HomePage()));
+                                                  MyHomePage()));
                                     }
                                   }
                                 },
