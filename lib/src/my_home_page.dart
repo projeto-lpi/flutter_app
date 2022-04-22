@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.fastfood_rounded),
-          title: Text('Nutri '),
+          title: Text('Nutritionist '),
           activeColor: Colors.red,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,

@@ -1,28 +1,16 @@
+import 'dart:io';
+import 'dart:convert';
+
 class Users {
-  final String name;
-  final String email;
-  final String password;
-  final String age;
-  final String weight;
-  final String height;
+  late int id;
+  late String name;
+  late String email;
+  late String password;
+  late String picture;
 
-  const Users({
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.age,
-    required this.weight,
-    required this.height,
-  });
-
-  factory Users.fromJson(Map<String, dynamic> json) {
-    return Users(
-      name: json['name'],
-      email: json['email'],
-      password: json['password'],
-      age: json['age'],
-      weight: json['weight'],
-      height: json['height'],
-    );
+  Users(this.id, this.email, this.password, this.name, this.picture);
+  factory Users.fromJson(dynamic json) {
+    return Users(json["ID"], json['email'], json['password'], json['name'],
+        json['picture']);
   }
 }

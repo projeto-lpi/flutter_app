@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:convert' as convert;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:healthier_app/src/models/users.dart';
 import 'package:healthier_app/src/my_home_page.dart';
 import 'package:healthier_app/src/signup_page.dart';
 import 'package:healthier_app/src/home_page.dart';
@@ -19,46 +19,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  int state = 0;
+  Users user = Users(0, "", "", "", "");
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _validate_email = false, _validate_password = false;
+
+  int state = 0;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<int> attemptLogIn(
-      String email, String password, BuildContext context) async {
-    var response = await http.post(
-        Uri.parse('http://192.168.75.1:8081/api/v1/auth/login'), //global
-        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/login'), //damss
+  String url = "http://192.168.75.1:8081/api/v1/auth/login";
 
-        body: convert.jsonEncode(
-            <String, String>{"password": password, "email": email}));
+  Future attemptLogIn() async {
+    var request = {"email": user.email, "password": user.password};
+    var response = await http.post(Uri.parse(url), body: jsonEncode(request));
+
     var jsonResponse;
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         state = 1;
-        var token = json.decode(response.body)['token'];
-
-        var profilePicture = json.decode(response.body)['profilePicture'];
-
-        var type = json.decode(response.body)['user_type'];
+        var token = jsonResponse['token'];
 
         await storage.write(key: 'jwt', value: token);
-        await storage.write(key: 'profilePicture', value: profilePicture);
-        await storage.write(key: 'user_type', value: type);
       }
       print('login ok');
+
       return 1;
-    } else {
-      state = 0;
-      print("Incorrect");
-      return 0;
     }
+    state = 0;
+    print('login not ok');
+    return 0;
   }
 
   @override
@@ -114,18 +108,17 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  var email = _emailController.text;
-                                  var password = _passwordController.text;
-
-                                  if (checkEmail(email) == true) {
-                                    await attemptLogIn(
-                                        email, password, context);
+                                  user.email = _emailController.text;
+                                  user.password = _passwordController.text;
+                                  if (checkEmail(user.email) == true) {
+                                    await attemptLogIn();
                                     if (state == 1) {
                                       Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MyHomePage()));
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MyHomePage(),
+                                        ),
+                                      );
                                     }
                                   }
                                 },

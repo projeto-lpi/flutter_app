@@ -29,8 +29,6 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       name = results["name"];
       email = results["email"];
-      print(name);
-      print(email);
     });
     return results;
   }

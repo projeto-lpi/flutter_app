@@ -24,8 +24,9 @@ class _SignupPageState extends State<SignupPage> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
-  String usertype = "user";
-  bool gender = false;
+  String role = "client".toUpperCase();
+  bool genderSwitch = false;
+  String gender = "";
 
   bool _validate_email = false,
       _validate_password = false,
@@ -84,7 +85,7 @@ class _SignupPageState extends State<SignupPage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: DropdownButton(
-                                value: usertype,
+                                value: role,
                                 style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.black,
@@ -92,21 +93,21 @@ class _SignupPageState extends State<SignupPage> {
                                 borderRadius: BorderRadius.circular(5),
                                 items: <DropdownMenuItem<String>>[
                                   DropdownMenuItem(
-                                    child: Text("user".toUpperCase()),
-                                    value: "user",
+                                    child: Text("client".toUpperCase()),
+                                    value: "client".toUpperCase(),
                                   ),
                                   DropdownMenuItem(
-                                    child: Text("pt".toUpperCase()),
-                                    value: "pt",
+                                    child: Text("trainer".toUpperCase()),
+                                    value: "trainer".toUpperCase(),
                                   ),
                                   DropdownMenuItem(
-                                    child: Text("nutri".toUpperCase()),
-                                    value: "nutri",
+                                    child: Text("nutritionist".toUpperCase()),
+                                    value: "nutritionist".toUpperCase(),
                                   ),
                                 ],
                                 onChanged: (String? selectedValue) {
                                   setState(() {
-                                    usertype = selectedValue!;
+                                    role = selectedValue!;
                                   });
                                 }),
                           ),
@@ -122,10 +123,10 @@ class _SignupPageState extends State<SignupPage> {
                               offset: Offset(2.5, 0),
                               child: Switch(
                                 activeColor: Colors.red,
-                                value: gender,
+                                value: genderSwitch,
                                 onChanged: (bool newValue) {
                                   setState(() {
-                                    gender = newValue;
+                                    genderSwitch = newValue;
                                   });
                                 },
                               ),
@@ -157,8 +158,10 @@ class _SignupPageState extends State<SignupPage> {
                                       age,
                                       weight,
                                       height,
-                                      gender,
-                                      usertype,
+                                      (genderSwitch
+                                          ? gender = "female"
+                                          : gender = "male"),
+                                      role,
                                       context);
                                   if (state == 1) {
                                     SnackBar(
@@ -257,8 +260,8 @@ class _SignupPageState extends State<SignupPage> {
       String age,
       String weight,
       String height,
-      bool gender,
-      String user_type,
+      String gender,
+      String role,
       BuildContext context) async {
     var response = await http.post(
         Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
@@ -271,7 +274,7 @@ class _SignupPageState extends State<SignupPage> {
           "age": age,
           "weight": weight,
           "height": height,
-          "user_type": user_type
+          "role": role
         }));
     var jsonResponse;
     if (response.statusCode == 200) {
