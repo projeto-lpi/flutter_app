@@ -1,6 +1,11 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart' as http;
+import 'package:cool_alert/cool_alert.dart';
 import 'package:healthier_app/src/login_page.dart';
 
 import '../main.dart';
@@ -11,6 +16,18 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPage extends State<SettingsPage> {
+  TextEditingController _newPasswordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+
+  String password = "";
+
+  @override
+  void dispose() {
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,17 +94,54 @@ class _SettingsPage extends State<SettingsPage> {
                         title: Text("Já estás Candido"),
                         content: Column(
                           children: [
-                            Text("É filho"),
-                            Text("Global Noob"),
-                            Text("Damss FDP"),
+                            TextFormField(
+                                controller: _newPasswordController,
+                                decoration: const InputDecoration(
+                                  border: UnderlineInputBorder(),
+                                  labelText: 'Enter your new password',
+                                ),
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some text';
+                                  }
+                                }),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter some text';
+                                } else if (_newPasswordController.text !=
+                                    _confirmPasswordController.text) {
+                                  return 'Passwords don\'t match! Try again...';
+                                }
+                                password = _confirmPasswordController.text;
+                              },
+                              decoration: const InputDecoration(
+                                border: UnderlineInputBorder(),
+                                labelText: 'Confirm your new password',
+                              ),
+                              obscureText: true,
+                            ),
                           ],
                         ),
                         actions: [
                           TextButton(
+                            style: TextButton.styleFrom(primary: Colors.red),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                             child: Text("Close"),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: Colors.red),
+                            onPressed: () {
+                              updatePassword();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Update"),
                           ),
                         ],
                       );
@@ -111,59 +165,33 @@ class _SettingsPage extends State<SettingsPage> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 330,
-            ),
-            Center(
-              child: OutlinedButton(
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                    EdgeInsets.only(
-                      left: 60,
-                      right: 60,
-                    ),
-                  ),
-                ),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Sign Out"),
-                          content: Text("Are you sure you want to Sign Out?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginPage()),
-                                    (_) => false);
-                              },
-                              child: Text("Continue"),
-                            )
-                          ],
-                        );
-                      });
-                },
-                child: Text(
-                  "SIGN OUT",
-                  style: TextStyle(
-                    fontSize: 16,
-                    letterSpacing: 2.2,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
+  }
+
+  updatePassword() async {
+    var jwt = await storage.read(key: "jwt");
+    var results = parseJwtPayLoad(jwt!);
+    var id = results["UserID"];
+
+    String url = "http://192.168.75.1:8081/api/v1/user/$id";
+    var response = await http.patch(Uri.parse(url),
+        body: jsonEncode({"password": password}));
+    if (response.statusCode == 200) {
+      await storage.write(key: 'password', value: password);
+      return CoolAlert.show(
+        context: context,
+        type: CoolAlertType.success,
+        text: "Your password as been successfully updated!",
+      );
+    } else {
+      return CoolAlert.show(
+        context: context,
+        type: CoolAlertType.error,
+        text: "Sorry! Something went wrong...",
+      );
+    }
   }
 }
