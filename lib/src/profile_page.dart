@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:healthier_app/src/models/users.dart';
 import 'package:healthier_app/src/home_page.dart';
 import 'package:healthier_app/src/settings_page.dart';
@@ -30,10 +32,10 @@ class _ProfilePage extends State<ProfilePage> {
 
   @override
   void initState() {
-    getUsername();
-    this.loadPicture();
-    this.buildPicture();
     super.initState();
+    getUsername();
+    loadPicture();
+    buildPicture();
   }
 
   getUsername() async {
@@ -172,7 +174,9 @@ class _ProfilePage extends State<ProfilePage> {
   }
 
   loadPicture() async {
-    picture = (await storage.read(key: 'picture'))!;
+    var jwt = await storage.read(key: 'jwt');
+    var results = parseJwtPayLoad(jwt!);
+    picture = results["picture"];
 
     setState(() {});
   }
@@ -195,7 +199,11 @@ class _ProfilePage extends State<ProfilePage> {
         body: jsonEncode({"picture": picture}));
 
     if (response.statusCode == 200) {
-      await storage.write(key: 'picture', value: picture);
+      return CoolAlert.show(
+        context: context,
+        type: CoolAlertType.success,
+        text: "Your picture as been successfully updated!",
+      );
     }
   }
 }

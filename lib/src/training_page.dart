@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/models/trainers.dart';
@@ -20,6 +21,8 @@ class _TrainingPageState extends State<TrainingPage> {
   late String email = "";
   late int user_id = 0;
   late int trainer_id = 0;
+
+  late Uint8List imgBytes;
 
   List<Trainer> trainers = [];
 
@@ -78,26 +81,72 @@ class _TrainingPageState extends State<TrainingPage> {
   Widget drawBody() {
     if (trainer_id == 0) {
       if (trainers.isNotEmpty) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 30.0),
+        return Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height * 0.6,
+          width: MediaQuery.of(context).size.width,
           child: PageView.builder(
             itemBuilder: (context, index) {
               final trainer = trainers[index];
-              return InkWell(
-                child: ListTile(
-                  title: Text(trainer.name),
-                  subtitle: Text(trainer.email),
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/images/foto.jpg'),
+              getTrainerPicture(trainer.picture);
+              return Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(35)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 150,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 30.0),
+                          child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: trainer.picture == ""
+                                  ? NetworkImage(
+                                          'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                      as ImageProvider
+                                  : MemoryImage(imgBytes) as ImageProvider),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Text(
+                        trainer.name,
+                        style: TextStyle(fontSize: 25.0, color: Colors.red),
+                      ),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Text(
+                        trainer.email,
+                        style: TextStyle(fontSize: 15.0, color: Colors.red),
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          elevation: 5,
+                          primary: Colors.white,
+                        ),
+                        label: Text('Add Trainer'),
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                _showDialog(trainer, context),
+                          );
+                        },
+                      )
+                    ],
                   ),
                 ),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _showDialog(trainer, context),
-                  );
-                },
               );
             },
             itemCount: trainers.length,
@@ -115,11 +164,14 @@ class _TrainingPageState extends State<TrainingPage> {
     }
   }
 
+  getTrainerPicture(String picture) {
+    imgBytes = base64Decode(picture);
+  }
+
   Widget _showDialog(Trainer item, context) {
-    Widget yesButton = ElevatedButton(
+    Widget yesButton = TextButton(
         style: TextButton.styleFrom(
-          primary: Colors.red,
-        ),
+            primary: Colors.white, backgroundColor: Colors.red),
         child: new Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -129,9 +181,10 @@ class _TrainingPageState extends State<TrainingPage> {
           Navigator.pop(context);
         });
 
-    Widget noButton = ElevatedButton(
+    Widget noButton = TextButton(
       style: TextButton.styleFrom(
-        primary: Colors.black,
+        backgroundColor: Colors.white,
+        primary: Colors.red,
       ),
       child: Text(
         "No",
