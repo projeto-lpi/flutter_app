@@ -36,11 +36,10 @@ class _TrainingPageState extends State<TrainingPage> {
   void getData() async {
     var jwt = await storage.read(key: "jwt");
     var results = parseJwtPayLoad(jwt!);
-    setState(() {
-      user_name = results["name"];
-      user_id = results["UserID"];
-      trainer_id = results["trainer_id"];
-    });
+    user_name = results["name"];
+    user_id = results["UserID"];
+    trainer_id = results["trainer_id"];
+    setState(() {});
   }
 
   @override
@@ -86,6 +85,7 @@ class _TrainingPageState extends State<TrainingPage> {
           height: MediaQuery.of(context).size.height * 0.6,
           width: MediaQuery.of(context).size.width,
           child: PageView.builder(
+            physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final trainer = trainers[index];
               getTrainerPicture(trainer.picture);
