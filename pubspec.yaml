@@ -41,6 +41,11 @@ dependencies:
   image_picker: ^0.8.5
   editable_image: ^1.0.1
   cool_alert: ^1.1.0
+  pedometer: ^3.0.0
+  flutter_circular_chart: ^0.1.0
+  pie_chart: ^5.3.0
+  health: ^3.4.4
+  flutter_blue: ^0.8.0
   
 
 dev_dependencies:
