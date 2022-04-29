@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  String url = "http://192.168.75.1:8081/api/v1/auth/login";
+  String url = "http://18.170.87.131:8081/api/v1/auth/login";
 
   Future attemptLogIn() async {
     var request = {"email": user.email, "password": user.password};

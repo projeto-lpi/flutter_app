@@ -71,7 +71,7 @@ class _TrainingPageState extends State<TrainingPage> {
   }
 
   getTrainers() async {
-    String url = "http://192.168.75.1:8081/api/v1/trainer";
+    String url = "http://18.170.87.131:8081/api/v1/trainer";
     var response = await http.get(Uri.parse(url));
     var objJson = jsonDecode(response.body)['data'] as List;
     trainers = objJson.map((json) => Trainer.fromJson(json)).toList();
@@ -214,7 +214,7 @@ class _TrainingPageState extends State<TrainingPage> {
     print("user_id do trainer = $id");
     print("user_id do client = $user_id");
     String url2 =
-        "http://192.168.75.1:8081/api/v1/client/$user_id/addTrainer/$id";
+        "http://18.170.87.131:8081/api/v1/client/$user_id/addTrainer/$id";
     var response2 = await http.patch(Uri.parse(url2));
     if (response2.statusCode == 200) {
       print("add trainer ok");

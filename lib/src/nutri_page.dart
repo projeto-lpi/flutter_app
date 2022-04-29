@@ -69,7 +69,7 @@ class _NutriPageState extends State<NutriPage> {
   }
 
   getNutris() async {
-    String url = "http://192.168.75.1:8081/api/v1/nutritionist";
+    String url = "http://18.170.87.131:8081/api/v1/nutritionist";
     var response = await http.get(Uri.parse(url));
     var objJson = jsonDecode(response.body)['data'] as List;
     nutris = objJson.map((json) => Nutritionists.fromJson(json)).toList();

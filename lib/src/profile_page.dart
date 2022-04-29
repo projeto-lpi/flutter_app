@@ -194,7 +194,7 @@ class _ProfilePage extends State<ProfilePage> {
     var results = parseJwtPayLoad(jwt!);
     int id = results["UserID"];
 
-    String url = "http://192.168.75.1:8081/api/v1/user/$id";
+    String url = "http://18.170.87.131:8081/api/v1/user/$id";
     var response = await http.patch(Uri.parse(url),
         body: jsonEncode({"picture": picture}));
 
