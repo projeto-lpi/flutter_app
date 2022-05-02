@@ -7,6 +7,7 @@ import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:cool_alert/cool_alert.dart';
 import 'package:healthier_app/src/login_page.dart';
+import './utils/constants.dart' as constants;
 
 import '../main.dart';
 
@@ -20,6 +21,7 @@ class _SettingsPage extends State<SettingsPage> {
   TextEditingController _confirmPasswordController = TextEditingController();
 
   String password = "";
+  String ip = constants.IP;
 
   @override
   void dispose() {
@@ -47,123 +49,181 @@ class _SettingsPage extends State<SettingsPage> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 16, top: 15, right: 16),
-        child: ListView(
+        padding: EdgeInsets.only(left: 14),
+        alignment: Alignment.topLeft,
+        child: Column(
           children: [
-            Text(
-              "Settings",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w500,
+            Container(
+              alignment: Alignment.topLeft,
+              child: Text(
+                "Settings",
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             SizedBox(
               height: 40,
             ),
-            Row(
+            Column(
               children: [
-                Icon(
-                  Icons.person,
-                  color: Colors.red,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person,
+                      color: Colors.red,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      "Account",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(
+                  height: 15,
+                  thickness: 2,
                 ),
                 SizedBox(
-                  width: 8,
+                  height: 10,
                 ),
-                Text(
-                  "Account",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Já estás Candido"),
+                            content: Column(
+                              children: [
+                                TextFormField(
+                                    controller: _newPasswordController,
+                                    decoration: const InputDecoration(
+                                      border: UnderlineInputBorder(),
+                                      labelText: 'Enter your new password',
+                                    ),
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter some text';
+                                      }
+                                    }),
+                                TextFormField(
+                                  controller: _confirmPasswordController,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter some text';
+                                    } else if (_newPasswordController.text !=
+                                        _confirmPasswordController.text) {
+                                      return 'Passwords don\'t match! Try again...';
+                                    }
+                                    password = _confirmPasswordController.text;
+                                  },
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    labelText: 'Confirm your new password',
+                                  ),
+                                  obscureText: true,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                style:
+                                    TextButton.styleFrom(primary: Colors.red),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Close"),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.red),
+                                onPressed: () {
+                                  updatePassword();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Update"),
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Change Password",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            Divider(
-              height: 15,
-              thickness: 2,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
+            Container(
+              height: MediaQuery.of(context).size.height*.6,
+              alignment: Alignment.bottomCenter,
+              child: OutlinedButton(
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(
+                  EdgeInsets.only(
+                    left: 60,
+                    right: 60,
+                  ),
+                ),
+              ),
+              onPressed: () {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text("Já estás Candido"),
-                        content: Column(
-                          children: [
-                            TextFormField(
-                                controller: _newPasswordController,
-                                decoration: const InputDecoration(
-                                  border: UnderlineInputBorder(),
-                                  labelText: 'Enter your new password',
-                                ),
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter some text';
-                                  }
-                                }),
-                            TextFormField(
-                              controller: _confirmPasswordController,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter some text';
-                                } else if (_newPasswordController.text !=
-                                    _confirmPasswordController.text) {
-                                  return 'Passwords don\'t match! Try again...';
-                                }
-                                password = _confirmPasswordController.text;
-                              },
-                              decoration: const InputDecoration(
-                                border: UnderlineInputBorder(),
-                                labelText: 'Confirm your new password',
-                              ),
-                              obscureText: true,
-                            ),
-                          ],
-                        ),
+                        title: Text("Sign Out"),
+                        content: Text("Are you sure you want to Sign Out?"),
                         actions: [
                           TextButton(
-                            style: TextButton.styleFrom(primary: Colors.red),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text("Close"),
+                            child: Text("Cancel"),
                           ),
                           TextButton(
-                            style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                backgroundColor: Colors.red),
                             onPressed: () {
-                              updatePassword();
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()),
+                                      (_) => false);
                             },
-                            child: Text("Update"),
-                          ),
+                            child: Text("Continue"),
+                          )
                         ],
                       );
                     });
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Change Password",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.grey,
-                  ),
-                ],
+              child: Text(
+                "SIGN OUT",
+                style: TextStyle(
+                  fontSize: 16,
+                  letterSpacing: 2.2,
+                  color: Colors.black,
+                ),
               ),
+            ),
             ),
           ],
         ),
@@ -176,7 +236,7 @@ class _SettingsPage extends State<SettingsPage> {
     var results = parseJwtPayLoad(jwt!);
     var id = results["UserID"];
 
-    String url = "http://18.170.87.131:8081/api/v1/user/$id";
+    String url = "http://$ip:8081/api/v1/user/$id";
     var response = await http.patch(Uri.parse(url),
         body: jsonEncode({"password": password}));
     if (response.statusCode == 200) {

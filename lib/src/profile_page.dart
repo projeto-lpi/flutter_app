@@ -6,10 +6,12 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:healthier_app/src/models/users.dart';
-import 'package:healthier_app/src/home_page.dart';
+import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:healthier_app/src/settings_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
+import './utils/constants.dart' as constants;
+
 import 'package:image_picker/image_picker.dart';
 
 import '../main.dart';
@@ -23,7 +25,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePage extends State<ProfilePage> {
   late String name = "";
-
+  String ip = constants.IP;
   final picker = ImagePicker();
   File? _image = null;
   bool button = false;
@@ -49,110 +51,107 @@ class _ProfilePage extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          actions: button == true
-              ? <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.check_outlined),
-                    color: Colors.white,
-                    tooltip: 'Save changes',
-                    onPressed: () async {
-                      List<int> imgBytes = await _image!.readAsBytes();
-                      String base64img = base64Encode(imgBytes);
-                      await editPicture(base64img);
-                      setState(() {
-                        button = false;
-                      });
-                    },
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        actions: button == true
+            ? <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.check_outlined),
+                  color: Colors.white,
+                  tooltip: 'Save changes',
+                  onPressed: () async {
+                    List<int> imgBytes = await _image!.readAsBytes();
+                    String base64img = base64Encode(imgBytes);
+                    await editPicture(base64img);
+                    setState(() {
+                      button = false;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsPage()));
+                  },
+                ),
+              ]
+            : <Widget>[
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingsPage()));
+                  },
+                ),
+              ],
+      ),
+      body: Container(
+        padding: EdgeInsets.only(
+          left: 16,
+          top: 15,
+          right: 16,
+        ),
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/images/background_gradient.webp'),
+              fit: BoxFit.cover),
+        ),
+        child: ListView(
+          children: [
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: _image == null
+                        ? (picture != ""
+                            ? MemoryImage(imageBytes) as ImageProvider
+                            : AssetImage('assets/images/foto.jpg'))
+                        : FileImage(File(_image!.path)),
+                    radius: 50,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SettingsPage()));
-                    },
-                  ),
-                ]
-              : <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SettingsPage()));
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 75.0, left: 75),
+                    child: InkWell(
+                      child: Container(
+                        height: 25,
+                        width: 25,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black,
+                        ),
+                        child: Icon(Icons.edit, color: Colors.white, size: 20),
+                      ),
+                      onTap: () {
+                        getImage();
+                      },
+                    ),
                   ),
                 ],
-        ),
-        body: Container(
-          padding: EdgeInsets.only(
-            left: 16,
-            top: 15,
-            right: 16,
-          ),
-          alignment: Alignment.center,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/background_gradient.webp'),
-                fit: BoxFit.cover),
-          ),
-          child: ListView(
-            children: [
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: _image == null
-                          ? (picture != ""
-                              ? MemoryImage(imageBytes) as ImageProvider
-                              : AssetImage('assets/images/foto.jpg'))
-                          : FileImage(File(_image!.path)),
-                      radius: 50,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 75.0, left: 75),
-                      child: InkWell(
-                        child: Container(
-                          height: 25,
-                          width: 25,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                          ),
-                          child:
-                              Icon(Icons.edit, color: Colors.white, size: 20),
-                        ),
-                        onTap: () {
-                          getImage();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
               ),
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
@@ -194,7 +193,7 @@ class _ProfilePage extends State<ProfilePage> {
     var results = parseJwtPayLoad(jwt!);
     int id = results["UserID"];
 
-    String url = "http://18.170.87.131:8081/api/v1/user/$id";
+    String url = "http://$ip:8081/api/v1/user/$id";
     var response = await http.patch(Uri.parse(url),
         body: jsonEncode({"picture": picture}));
 

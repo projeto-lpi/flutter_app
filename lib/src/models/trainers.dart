@@ -7,7 +7,7 @@ class Trainer extends Users {
       : super(id, email, password, name, picture);
 
   factory Trainer.fromJson(dynamic json) {
-    return Trainer(json["ID"], json['email'], json['password'], json['name'],
+    return Trainer(json['ID'], json['email'], json['password'], json['name'],
         json['picture']);
   }
 }

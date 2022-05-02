@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import './utils/constants.dart' as constants;
 import 'dart:convert';
 import '../main.dart';
 import 'dart:async';
-import 'package:healthier_app/src/home_page.dart';
+import 'package:healthier_app/src/client/client_home_page.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({Key? key}) : super(key: key);
@@ -27,6 +28,9 @@ class _SignupPageState extends State<SignupPage> {
   String role = "client".toUpperCase();
   bool genderSwitch = false;
   String gender = "";
+  String ip = constants.IP;
+
+  int flag = 0;
 
   bool _validate_email = false,
       _validate_password = false,
@@ -72,16 +76,6 @@ class _SignupPageState extends State<SignupPage> {
                           SizedBox(
                             height: 20,
                           ),
-                          drawFormField('Name', _nameController, Icons.person),
-                          drawFormField('Email', _emailController, Icons.email),
-                          drawFormField(
-                              'Password', _passwordController, Icons.password),
-                          drawFormField(
-                              'Age', _ageController, Icons.calendar_month),
-                          drawFormField(
-                              'Weight', _weightController, Icons.balance),
-                          drawFormField(
-                              'Height', _heightController, Icons.height),
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: DropdownButton(
@@ -111,34 +105,7 @@ class _SignupPageState extends State<SignupPage> {
                                   });
                                 }),
                           ),
-                          Row(children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 0, left: 40),
-                              child: Icon(
-                                Icons.female_rounded,
-                                color: Colors.red,
-                              ),
-                            ),
-                            Transform.translate(
-                              offset: Offset(2.5, 0),
-                              child: Switch(
-                                activeColor: Colors.red,
-                                value: genderSwitch,
-                                onChanged: (bool newValue) {
-                                  setState(() {
-                                    genderSwitch = newValue;
-                                  });
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 0),
-                              child: Icon(
-                                Icons.male_rounded,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ]),
+                          drawBody(),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ElevatedButton(
@@ -151,18 +118,24 @@ class _SignupPageState extends State<SignupPage> {
                                 var height = _heightController.text;
 
                                 if (_validate_email != true) {
-                                  await attemptSignUp(
-                                      name,
-                                      email,
-                                      password,
-                                      age,
-                                      weight,
-                                      height,
-                                      (genderSwitch
-                                          ? gender = "female"
-                                          : gender = "male"),
-                                      role,
-                                      context);
+                                  if (flag == 1) {
+                                    await attemptSignUpClient(
+                                        name,
+                                        email,
+                                        password,
+                                        age,
+                                        weight,
+                                        height,
+                                        (genderSwitch
+                                            ? gender = "female"
+                                            : gender = "male"),
+                                        role,
+                                        context);
+                                  } else if (flag == 0) {
+                                    attemptSignUpOthers(
+                                        name, email, password, role, context);
+                                  }
+
                                   if (state == 1) {
                                     SnackBar(
                                       content:
@@ -196,6 +169,65 @@ class _SignupPageState extends State<SignupPage> {
             ),
           ]),
         ));
+  }
+
+  drawBody() {
+    if (role == 'CLIENT') {
+      flag = 1;
+      return Padding(
+        padding: EdgeInsets.all(0),
+        child: Column(
+          children: [
+            drawFormField('Name', _nameController, Icons.person),
+            drawFormField('Email', _emailController, Icons.email),
+            drawFormField('Password', _passwordController, Icons.password),
+            drawFormField('Age', _ageController, Icons.calendar_month),
+            drawFormField('Weight', _weightController, Icons.balance),
+            drawFormField('Height', _heightController, Icons.height),
+            Row(children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 0, left: 40),
+                child: Icon(
+                  Icons.female_rounded,
+                  color: Colors.red,
+                ),
+              ),
+              Transform.translate(
+                offset: Offset(2.5, 0),
+                child: Switch(
+                  activeColor: Colors.red,
+                  value: genderSwitch,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      genderSwitch = newValue;
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 0),
+                child: Icon(
+                  Icons.male_rounded,
+                  color: Colors.red,
+                ),
+              ),
+            ]),
+          ],
+        ),
+      );
+    } else if (role == 'NUTRITIONIST' || role == 'TRAINER') {
+      flag = 0;
+      return Padding(
+        padding: EdgeInsets.all(0),
+        child: Column(
+          children: [
+            drawFormField('Name', _nameController, Icons.person),
+            drawFormField('Email', _emailController, Icons.email),
+            drawFormField('Password', _passwordController, Icons.password),
+          ],
+        ),
+      );
+    }
   }
 
   Widget drawFormField(
@@ -253,7 +285,37 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Future<int> attemptSignUp(
+  Future<int> attemptSignUpOthers(String name, String email, String password,
+      String role, BuildContext context) async {
+    var response = await http.post(
+        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
+        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
+        Uri.parse('http://$ip:8081/api/v1/auth/register'), //baguetes
+        body: convert.jsonEncode({
+          "name": name,
+          "email": email,
+          "password": password,
+          "role": role
+        }));
+    var jsonResponse;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      if (jsonResponse != null) {
+        state = 1;
+        var token = jsonResponse['token'];
+
+        await storage.write(key: 'jwt', value: token);
+      }
+      print('register ok');
+
+      return 1;
+    }
+    state = 0;
+    print('register not ok');
+    return 0;
+  }
+
+  Future<int> attemptSignUpClient(
       String name,
       String email,
       String password,
@@ -266,7 +328,7 @@ class _SignupPageState extends State<SignupPage> {
     var response = await http.post(
         //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
         //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
-        Uri.parse('http://18.170.87.131:8081/api/v1/auth/login'), //baguetes
+        Uri.parse('http://$ip:8081/api/v1/auth/register'), //baguetes
         body: convert.jsonEncode({
           "name": name,
           "email": email,

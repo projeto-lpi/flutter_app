@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:healthier_app/src/challenge_page.dart';
-import 'package:healthier_app/src/home_page.dart';
-import 'package:healthier_app/src/nutri_page.dart';
+import 'package:healthier_app/src/client/challenge_page.dart';
+import 'package:healthier_app/src/client/client_home_page.dart';
+import 'package:healthier_app/src/client/nutri_page.dart';
+import 'package:healthier_app/src/nutri/chat_page.dart';
 import 'package:healthier_app/src/profile_page.dart';
-import 'package:healthier_app/src/training_page.dart';
+import 'package:healthier_app/src/client/training_page.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+import 'nutri_home_page.dart';
+
+class NutriMyHomePage extends StatefulWidget {
+  const NutriMyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<NutriMyHomePage> createState() => _NutriMyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _NutriMyHomePageState extends State<NutriMyHomePage> {
   int _currentIndex = 0;
   final _inactiveColor = Colors.grey;
 
@@ -27,10 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget getBody() {
     List<Widget> pages = [
-      HomePage(),
-      TrainingPage(),
-      NutriPage(),
-      ChallengesPage(),
+      NutriHomePage(),
+      NutriNutriPage(),
       ProfilePage(),
     ];
     return IndexedStack(
@@ -57,22 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
-          icon: Icon(Icons.directions_run_rounded),
-          title: Text('Training'),
-          activeColor: Colors.red,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-        BottomNavyBarItem(
           icon: Icon(Icons.fastfood_rounded),
           title: Text('Nutritionist '),
-          activeColor: Colors.red,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
-        BottomNavyBarItem(
-          icon: Icon(Icons.emoji_events_rounded),
-          title: Text('Challenges'),
           activeColor: Colors.red,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
