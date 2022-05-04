@@ -24,6 +24,7 @@ class _RunningPageState extends State<RunningPage> {
   Completer<GoogleMapController> _controller = Completer();
 
   late Position _currentPosition;
+
   late Position _previousPosition;
   late StreamSubscription<Position> _positionStream;
   double _totalDistance = 0;
@@ -34,6 +35,7 @@ class _RunningPageState extends State<RunningPage> {
   @override
   void initState() {
     super.initState();
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((Position value) => _currentPosition=value);
   }
 
   Future _calculateDistance() async {
@@ -54,6 +56,7 @@ class _RunningPageState extends State<RunningPage> {
                   position.longitude.toString());
 
           setState(() {
+
             _currentPosition = position;
             locations.add(_currentPosition);
             if (_currentPosition != null) {
@@ -116,9 +119,9 @@ class _RunningPageState extends State<RunningPage> {
                 tilt: cameraTilt,
                 bearing: cameraBearing),
             myLocationEnabled: true,
-            compassEnabled: true,
-            myLocationButtonEnabled: true,
-            mapToolbarEnabled: true,
+            compassEnabled: false,
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
             zoomControlsEnabled: false,
             buildingsEnabled: false,
             trafficEnabled: false,
@@ -145,7 +148,7 @@ class _RunningPageState extends State<RunningPage> {
                 /// Display stop watch time
                 StreamBuilder<int>(
                   stream: _stopWatchTimer.rawTime,
-                  initialData: _stopWatchTimer.rawTime.valueWrapper?.value,
+                  initialData: _stopWatchTimer.rawTime.value,
                   builder: (context, snap) {
                     final value = snap.data!;
                     final displayTime = StopWatchTimer.getDisplayTime(

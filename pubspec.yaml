@@ -44,13 +44,12 @@ dependencies:
   pedometer: ^3.0.0
   flutter_circular_chart: ^0.1.0
   pie_chart: ^5.3.0
-  flutter_blue: ^0.8.0
   permission_handler: ^9.2.0
   stop_watch_timer: ^1.1.0+1
   geolocator: ^8.2.0
-  flutter_polyline_points: ^1.0.0
   google_maps_flutter: ^2.1.4
-  
+  health: ^3.4.4
+
 
 dev_dependencies:
   flutter_test:

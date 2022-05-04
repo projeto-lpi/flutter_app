@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/client/running_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
@@ -15,6 +17,8 @@ import 'dart:math';
 import 'package:healthier_app/src/utils/constants.dart' as constants;
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:health/health.dart';
+
 
 class ClientHomePage extends StatefulWidget {
   ClientHomePage({Key? key}) : super(key: key);
@@ -23,18 +27,9 @@ class ClientHomePage extends StatefulWidget {
   State<ClientHomePage> createState() => _ClientHomePageState();
 }
 
-enum AppState {
-  DATA_NOT_FETCHED,
-  FETCHING_DATA,
-  DATA_READY,
-  NO_DATA,
-  AUTH_NOT_GRANTED,
-  DATA_ADDED,
-  DATA_NOT_ADDED,
-  STEPS_READY,
-}
 
 class _ClientHomePageState extends State<ClientHomePage> {
+
   late String name = "";
   String ip = constants.IP;
   double steps = 1204;
@@ -43,18 +38,16 @@ class _ClientHomePageState extends State<ClientHomePage> {
   double caloriesGoal = 1400;
   Map<String, double> stepsMap = Map();
   Map<String, double> caloriesMap = Map();
-  AppState _state = AppState.DATA_NOT_FETCHED;
-  int _nofSteps = 10;
-  double _mgdl = 10.0;
   late Stream<StepCount> _stepCountStream;
   late Stream<PedestrianStatus> _pedestrianStatusStream;
+
   String _status = '?';
   int _steps = 0;
+
 
   @override
   void initState() {
     super.initState();
-
     caloriesMap.addEntries(<String, double>{
       "current": caloriesCurrent,
       "goal": caloriesGoal
@@ -98,7 +91,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Future<void> initPlatformState() async {
-    if (await Permission.activityRecognition.request().isGranted) {
+    if (await Permission.activityRecognition
+        .request()
+        .isGranted) {
       _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
       _pedestrianStatusStream
           .listen(onPedestrianStatusChanged)
@@ -152,7 +147,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
       body: Container(
         alignment: Alignment.center,
         width: double.infinity,
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
         decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage('assets/images/background_gradient.webp'),
@@ -255,7 +253,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   chartType: ChartType.ring,
                   ringStrokeWidth: 10,
                   centerText:
-                      'Calories\n${caloriesCurrent.toInt()}/${caloriesGoal.toInt()} kcal',
+                  'Calories\n${caloriesCurrent.toInt()}/${caloriesGoal
+                      .toInt()} kcal',
                   centerTextStyle: TextStyle(
                       fontSize: 10,
                       color: Colors.black,
