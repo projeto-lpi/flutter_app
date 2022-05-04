@@ -51,6 +51,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     imgBytes = base64Decode(picture);
   }
 
+  @override
+  void dispose(){
+    _messageController.dispose();
+    super.dispose();
+  }
+
 
 
   @override
@@ -172,32 +178,36 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ),
       ),
       body: Stack(
+
         children: <Widget>[
-          ListView.builder(
-            key: ValueKey(allMessages.length),
-            itemCount: allMessages.length,
-            shrinkWrap: true,
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                padding:
-                EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                child: Align(
-                  alignment: allMessages[index].from_id == widget.worker_id
-                      ? Alignment.topLeft
-                      : Alignment.topRight,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: (allMessages[index].from_id == widget.client_id
-                            ? Colors.grey.shade200
-                            : Colors.red[400])),
-                    child: Text(allMessages[index].content),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 100.0),
+            child: ListView.builder(
+
+              key: ValueKey(allMessages.length),
+              itemCount: allMessages.length,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              itemBuilder: (context, index) {
+                return Container(
+                  padding:
+                  EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
+                  child: Align(
+                    alignment: allMessages[index].from_id == widget.worker_id
+                        ? Alignment.topLeft
+                        : Alignment.topRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: (allMessages[index].from_id == widget.client_id
+                              ? Colors.grey.shade200
+                              : Colors.red[400])),
+                      child: Text(allMessages[index].content),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
           Align(
             alignment: Alignment.bottomLeft,
@@ -264,4 +274,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
     );
   }
+
+
 }

@@ -264,30 +264,33 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
         ),
         body: Stack(
           children: <Widget>[
-            ListView.builder(
-              itemCount: allMessages.length,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Container(
-                  padding:
-                  EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                  child: Align(
-                    alignment: allMessages[index].from_id == user_id
-                        ? Alignment.topLeft
-                        : Alignment.topRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: (allMessages[index].from_id == user_id
-                              ? Colors.grey.shade200
-                              : Colors.red[400])),
-                      child: Text(allMessages[index].content),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50.0),
+              child: ListView.builder(
+                itemCount: allMessages.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding:
+                    EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
+                    child: Align(
+                      alignment: allMessages[index].from_id == user_id
+                          ? Alignment.topLeft
+                          : Alignment.topRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: (allMessages[index].from_id == user_id
+                                ? Colors.grey.shade200
+                                : Colors.red[400])),
+                        child: Text(allMessages[index].content),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
             Align(
               alignment: Alignment.bottomLeft,
@@ -415,7 +418,10 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
   Widget appBarText() {
     getData();
     if (nutri_id != 0) {
-      return Text('chat com nutri');
+      return Text(
+        'Chat',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+      );
     }
     return Text(
       'Select a Nutritionist',
