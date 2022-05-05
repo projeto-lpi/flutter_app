@@ -6,6 +6,8 @@ import 'package:healthier_app/src/profile_page.dart';
 import 'package:healthier_app/src/client/training_page.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
+import 'client_profile_page.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -32,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ClientTrainingPage(),
       ClientNutriPage(),
       ChallengesPage(),
-      ProfilePage(),
+      ClientProfilePage(),
     ];
     return IndexedStack(
       index: _currentIndex,

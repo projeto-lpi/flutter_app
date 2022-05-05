@@ -49,6 +49,9 @@ dependencies:
   geolocator: ^8.2.0
   google_maps_flutter: ^2.1.4
   health: ^3.4.4
+  hive: ^2.1.0
+  jiffy: ^5.0.0
+  hive_flutter: ^1.1.0
 
 
 dev_dependencies:

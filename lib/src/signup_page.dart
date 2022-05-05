@@ -288,8 +288,6 @@ class _SignupPageState extends State<SignupPage> {
   Future<int> attemptSignUpOthers(String name, String email, String password,
       String role, BuildContext context) async {
     var response = await http.post(
-        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
-        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
         Uri.parse('http://$ip:8081/api/v1/auth/register'), //baguetes
         body: convert.jsonEncode({
           "name": name,

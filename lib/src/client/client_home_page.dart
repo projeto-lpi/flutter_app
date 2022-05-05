@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/client/running_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
+import 'package:hive/hive.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:healthier_app/src/login_page.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +20,7 @@ import 'package:healthier_app/src/utils/constants.dart' as constants;
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:health/health.dart';
-
+import 'package:jiffy/jiffy.dart';
 
 class ClientHomePage extends StatefulWidget {
   ClientHomePage({Key? key}) : super(key: key);
@@ -27,10 +29,9 @@ class ClientHomePage extends StatefulWidget {
   State<ClientHomePage> createState() => _ClientHomePageState();
 }
 
-
 class _ClientHomePageState extends State<ClientHomePage> {
-
   late String name = "";
+  late int user_id;
   String ip = constants.IP;
   double steps = 1204;
   double goalSteps = 6000;
@@ -40,10 +41,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Map<String, double> caloriesMap = Map();
   late Stream<StepCount> _stepCountStream;
   late Stream<PedestrianStatus> _pedestrianStatusStream;
-
+  Box<int> stepsBox = Hive.box('steps');
+  late int todaySteps=0;
   String _status = '?';
   int _steps = 0;
-
 
   @override
   void initState() {
@@ -61,11 +62,51 @@ class _ClientHomePageState extends State<ClientHomePage> {
     return d.toString().substring(0, 19);
   }
 
-  void onStepCount(StepCount event) {
+  Future<int> onStepCount(StepCount event) async {
     print(event);
+    int savedStepsCountKey = 999999;
+    int? savedStepsCount = stepsBox.get(savedStepsCountKey, defaultValue: 0);
+
+    int todayDayNo = Jiffy(DateTime.now()).dayOfYear;
+
+    if (event.steps < savedStepsCount!) {
+      savedStepsCount = 0;
+      stepsBox.put(savedStepsCountKey, savedStepsCount);
+    }
+
+    int lastDaySavedKey = 888888;
+    int? lastDaySaved = stepsBox.get(lastDaySavedKey, defaultValue: 0);
+
+    if (lastDaySaved! < todayDayNo) {
+      lastDaySaved = todayDayNo;
+      savedStepsCount = event.steps;
+      stepsBox
+        ..put(lastDaySavedKey, lastDaySaved)
+        ..put(savedStepsCountKey, savedStepsCount);
+      saveTodaysSteps(todaySteps);
+    }
+
     setState(() {
-      _steps = event.steps;
+      todaySteps = event.steps - savedStepsCount!;
     });
+    stepsBox.put(todayDayNo, todaySteps);
+    return todaySteps;
+  }
+
+  void saveTodaysSteps(int steps) async {
+    String url = "$ip:8081/api/v1/steps/saveSteps/$user_id";
+    var response = await http.put(Uri.parse(url),
+        body: convert.jsonEncode({
+          "step_count": steps,
+          "user_id": user_id,
+          "date": Jiffy(DateTime.now()).dayOfYear
+        }));
+
+    if(response.statusCode==200){
+      print('save daily steps ok');
+
+    }
+    print('save daily steps not ok');
   }
 
   void onPedestrianStatusChanged(PedestrianStatus event) {
@@ -91,9 +132,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Future<void> initPlatformState() async {
-    if (await Permission.activityRecognition
-        .request()
-        .isGranted) {
+    if (await Permission.activityRecognition.request().isGranted) {
       _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
       _pedestrianStatusStream
           .listen(onPedestrianStatusChanged)
@@ -110,6 +149,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     var results = parseJwtPayLoad(jwt!);
     setState(() {
       name = results["name"];
+      user_id = results["UserID"];
       print(name);
       print("hello");
     });
@@ -119,7 +159,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
     stepsMap.addEntries(<String, double>{
-      "Steps": _steps.toDouble(),
+      "Steps": todaySteps.toDouble(),
       "GoalSteps": goalSteps
     }.entries);
     return Scaffold(
@@ -147,10 +187,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
       body: Container(
         alignment: Alignment.center,
         width: double.infinity,
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage('assets/images/background_gradient.webp'),
@@ -171,7 +208,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   dataMap: stepsMap,
                   chartType: ChartType.ring,
                   ringStrokeWidth: 10,
-                  centerText: 'Steps\n$_steps/${goalSteps.toInt()}',
+                  centerText: 'Steps\n$todaySteps/${goalSteps.toInt()}',
                   centerTextStyle: TextStyle(
                       fontSize: 11,
                       color: Colors.black,
@@ -253,8 +290,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   chartType: ChartType.ring,
                   ringStrokeWidth: 10,
                   centerText:
-                  'Calories\n${caloriesCurrent.toInt()}/${caloriesGoal
-                      .toInt()} kcal',
+                      'Calories\n${caloriesCurrent.toInt()}/${caloriesGoal.toInt()} kcal',
                   centerTextStyle: TextStyle(
                       fontSize: 10,
                       color: Colors.black,

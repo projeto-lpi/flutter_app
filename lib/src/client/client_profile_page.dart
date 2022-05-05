@@ -10,22 +10,21 @@ import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:healthier_app/src/settings_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
-import './utils/constants.dart' as constants;
+import '../../main.dart';
+import '../models/steps.dart';
+import '../utils/constants.dart' as constants;
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../main.dart';
-import 'models/steps.dart';
-
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ClientProfilePage extends StatefulWidget {
+  const ClientProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePage createState() => _ProfilePage();
 }
 
-class _ProfilePage extends State<ProfilePage> {
+class _ProfilePage extends State<ClientProfilePage> {
   late String name = "";
   late int user_id = 0;
   String ip = constants.IP;
@@ -55,9 +54,21 @@ class _ProfilePage extends State<ProfilePage> {
     return results;
   }
 
+  DateTime formatDate(dayOfYear) {
+    int millisInADay = Duration(days: 1).inMilliseconds; // 86400000
+    int millisDayOfYear = dayOfYear * millisInADay;
+    int millisecondsSinceEpoch =
+        DateTime(DateTime.now().year).millisecondsSinceEpoch;
+
+    DateTime dayOfYearDate = DateTime.fromMillisecondsSinceEpoch(
+        millisecondsSinceEpoch + millisDayOfYear);
+    return dayOfYearDate;
+  }
 
   @override
   Widget build(BuildContext context) {
+    getHistorySteps();
+    steps.sort((a, b) => a.date.compareTo(b.date));
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBody: true,
@@ -150,7 +161,20 @@ class _ProfilePage extends State<ProfilePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
+              Padding(
+                padding: const EdgeInsets.only(right:18.0,left: 18,bottom: 18),
+                child: SfCartesianChart(
+                    primaryXAxis: CategoryAxis(),
+                    primaryYAxis: NumericAxis(minimum: 0, maximum: 3000, interval: 1000),
+                    series: <ChartSeries<Steps, String>>[
+                      ColumnSeries<Steps, String>(
+                          dataSource: steps.length<5?steps:steps.sublist(steps.indexOf(steps.last)-5),
+                          xValueMapper: (Steps data, _) => '${formatDate(data.date).day}/${formatDate(data.date).month}',
+                          yValueMapper: (Steps data, _) => data.stepCount,
+                          name: 'Gold',
+                          color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(5),topLeft: Radius.circular(5)))
+                    ]),
+              )
             ],
           ),
 
@@ -208,5 +232,12 @@ class _ProfilePage extends State<ProfilePage> {
     }
   }
 
+  Future<List<Steps>> getHistorySteps() async {
+    String url = "http://$ip:8081/api/v1/steps/getStepsHistory/$user_id";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body)['steps'] as List;
+    steps = jsonResponse.map((json) => Steps.fromJson(json)).toList();
 
+    return steps;
+  }
 }

@@ -270,17 +270,17 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                 itemBuilder: (context, index) {
                   return Container(
                     padding:
-                        EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
+                        EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
                     child: Align(
                       alignment: allMessages[index].from_id == user_id
-                          ? Alignment.topLeft
-                          : Alignment.topRight,
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: (allMessages[index].from_id == user_id
-                                ? Colors.grey.shade200
-                                : Colors.red[400])),
+                                ? Colors.red[400]
+                                : Colors.grey.shade200)),
                         child: Text(allMessages[index].content),
                       ),
                     ),
