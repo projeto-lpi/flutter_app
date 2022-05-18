@@ -65,6 +65,7 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
     user_id = results["UserID"];
     setState(() {});
   }
+
   getTrainerPicture(String picture) {
     imgBytes = base64Decode(picture);
   }
@@ -93,7 +94,7 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
                     Text(
                       "Clients",
                       style:
-                      TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -115,13 +116,13 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                          return ChatDetailPage(
-                              client_name: user.name,
-                              client_email: user.email,
-                              client_id: user.id,
-                              client_picture: user.picture,
-                              worker_id: user_id);
-                        }));
+                      return ChatDetailPage(
+                          client_name: user.name,
+                          client_email: user.email,
+                          client_id: user.id,
+                          client_picture: user.picture,
+                          worker_id: user_id);
+                    }));
                   },
                   child: Container(
                     padding: EdgeInsets.only(
@@ -134,7 +135,7 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
                               CircleAvatar(
                                 backgroundImage: user.picture == ""
                                     ? NetworkImage(
-                                    'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                        'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
                                     : MemoryImage(imgBytes) as ImageProvider,
                                 maxRadius: 30,
                               ),
@@ -146,7 +147,7 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
                                   color: Colors.transparent,
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
                                         user.name,
@@ -177,8 +178,6 @@ class _NutriNutriPageState extends State<NutriNutriPage> {
     var objJson = jsonDecode(response.body)['data'] as List;
     clients = objJson.map((json) => Clients.fromJson(json)).toList();
   }
-
-
 
   getNutriPicture(String picture) {
     imgBytes = base64Decode(picture);

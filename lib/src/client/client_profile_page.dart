@@ -4,18 +4,15 @@ import 'dart:typed_data';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:healthier_app/src/models/users.dart';
-import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:healthier_app/src/settings_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
 import '../../main.dart';
 import '../models/steps.dart';
 import '../utils/constants.dart' as constants;
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ClientProfilePage extends StatefulWidget {
   const ClientProfilePage({Key? key}) : super(key: key);
@@ -35,6 +32,7 @@ class _ProfilePage extends State<ClientProfilePage> {
   late Uint8List imageBytes = base64Decode(picture);
   List<Steps> steps = [];
   int flag = 1;
+  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -118,9 +116,8 @@ class _ProfilePage extends State<ClientProfilePage> {
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/background_gradient.webp'),
-                fit: BoxFit.fill)),
+          gradient: bg_color,
+        ),
         child: SafeArea(
           child: Column(
             children: [
@@ -150,7 +147,6 @@ class _ProfilePage extends State<ClientProfilePage> {
                     },
                   ),
                 ),
-
               ]),
               Text(
                 name,
@@ -162,22 +158,29 @@ class _ProfilePage extends State<ClientProfilePage> {
                 textAlign: TextAlign.center,
               ),
               Padding(
-                padding: const EdgeInsets.only(right:18.0,left: 18,bottom: 18),
+                padding:
+                    const EdgeInsets.only(right: 18.0, left: 18, bottom: 18),
                 child: SfCartesianChart(
                     primaryXAxis: CategoryAxis(),
-                    primaryYAxis: NumericAxis(minimum: 0, maximum: 3000, interval: 1000),
+                    primaryYAxis:
+                        NumericAxis(minimum: 0, maximum: 3000, interval: 1000),
                     series: <ChartSeries<Steps, String>>[
                       ColumnSeries<Steps, String>(
-                          dataSource: steps.length<5?steps:steps.sublist(steps.indexOf(steps.last)-5),
-                          xValueMapper: (Steps data, _) => '${formatDate(data.date).day}/${formatDate(data.date).month}',
+                          dataSource: steps.length < 5
+                              ? steps
+                              : steps.sublist(steps.indexOf(steps.last) - 5),
+                          xValueMapper: (Steps data, _) =>
+                              '${formatDate(data.date).day - 1}/${formatDate(data.date).month}',
                           yValueMapper: (Steps data, _) => data.stepCount,
                           name: 'Gold',
-                          color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(5),topLeft: Radius.circular(5)))
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(5),
+                              topLeft: Radius.circular(5)))
                     ]),
               )
             ],
           ),
-
         ),
       ),
     );

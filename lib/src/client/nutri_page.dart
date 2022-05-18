@@ -30,10 +30,10 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
   List<Message> senderMessages = [];
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
-
+  LinearGradient bg_color = constants.bg_color;
   TextEditingController _messageController = TextEditingController();
 
-  int flag=1;
+  int flag = 1;
 
   @override
   void initState() {
@@ -65,14 +65,11 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
         centerTitle: true,
       ),
       body: Container(
-
         alignment: Alignment.center,
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/images/background_gradient.webp'),
-              fit: BoxFit.cover),
+          gradient: bg_color,
         ),
         child: drawBody(),
       ),
@@ -89,6 +86,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
           "content": _messageController.text
         }));
     if (response.statusCode == 200) {
+      setState(() {});
       print("send message ok");
     }
   }
@@ -98,6 +96,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     var response = await http.get(Uri.parse(url));
     var objJson = jsonDecode(response.body)['data'] as List;
     nutris = objJson.map((json) => Nutritionists.fromJson(json)).toList();
+    setState(() {});
   }
 
   getMessages() async {
@@ -112,13 +111,10 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     receiverMessages = receiverJson
         .map((receiverjson) => Message.fromJson(receiverjson))
         .toList();
-
-
-
+    setState(() {});
   }
 
   Widget drawBody() {
-
     if (nutri_id == 0) {
       if (nutris.isNotEmpty) {
         return Container(
@@ -202,11 +198,11 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
       allMessages = senderMessages + receiverMessages;
       allMessages.sort((a, b) => a.id.compareTo(b.id));
       Nutritionists nutri =
-      nutris.firstWhere((element) => element.id == nutri_id);
+          nutris.firstWhere((element) => element.id == nutri_id);
 
-      if(flag==1){
+      if (flag == 1) {
         getMessages();
-        flag=0;
+        flag = 0;
         getNutriPicture(nutri.picture);
       }
       return Scaffold(
@@ -226,8 +222,8 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                       maxRadius: 20,
                       backgroundImage: nutri.picture == ""
                           ? NetworkImage(
-                          'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                      as ImageProvider
+                                  'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                              as ImageProvider
                           : MemoryImage(imgBytes) as ImageProvider),
                   SizedBox(
                     width: 12,
@@ -274,7 +270,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                 itemBuilder: (context, index) {
                   return Container(
                     padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
+                        EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
                     child: Align(
                       alignment: allMessages[index].from_id == user_id
                           ? Alignment.topRight
@@ -337,7 +333,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                       FloatingActionButton(
                         onPressed: () {
                           sendMessage();
-                          flag=1;
+                          flag = 1;
                           _messageController.clear();
                         },
                         child: Icon(

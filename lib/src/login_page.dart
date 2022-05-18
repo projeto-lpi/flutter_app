@@ -21,7 +21,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-
+  LinearGradient bg_color=constants.bg_color;
   Users user = Users(0, "", "", "", "");
   String ip = constants.IP;
   String role="";
@@ -69,10 +69,7 @@ class _LoginPageState extends State<LoginPage> {
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background_gradient.webp'),
-                fit: BoxFit.cover,
-              ),
+                gradient: bg_color,
             ),
             child: Stack(
               children: [

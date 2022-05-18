@@ -32,10 +32,10 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   List<Message> senderMessages = [];
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
-
+  LinearGradient bg_color = constants.bg_color;
   TextEditingController _messageController = TextEditingController();
 
-  int flag=1;
+  int flag = 1;
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _messageController.dispose();
     super.dispose();
   }
@@ -78,9 +78,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/images/background_gradient.webp'),
-              fit: BoxFit.cover),
+          gradient: bg_color,
         ),
         child: drawBody(),
       ),
@@ -95,20 +93,17 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   }
 
   getMessages() async {
-      String url = "http://$ip:8081/api/v1/message/$user_id/$trainer_id";
-      var response = await http.get(Uri.parse(url));
+    String url = "http://$ip:8081/api/v1/message/$user_id/$trainer_id";
+    var response = await http.get(Uri.parse(url));
 
-      var objJson = jsonDecode(response.body)['senderMessages'] as List;
-      senderMessages =
-          objJson.map((senderjson) => Message.fromJson(senderjson)).toList();
+    var objJson = jsonDecode(response.body)['senderMessages'] as List;
+    senderMessages =
+        objJson.map((senderjson) => Message.fromJson(senderjson)).toList();
 
-      var receiverJson = jsonDecode(response.body)['receiverMessages'] as List;
-      receiverMessages = receiverJson
-          .map((receiverjson) => Message.fromJson(receiverjson))
-          .toList();
-
-
-
+    var receiverJson = jsonDecode(response.body)['receiverMessages'] as List;
+    receiverMessages = receiverJson
+        .map((receiverjson) => Message.fromJson(receiverjson))
+        .toList();
   }
 
   Widget drawBody() {
@@ -194,15 +189,14 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
         );
       }
     } else {
-
       allMessages = senderMessages + receiverMessages;
       allMessages.sort((a, b) => a.id.compareTo(b.id));
       Trainer trainer =
-      trainers.firstWhere((element) => element.id == trainer_id);
+          trainers.firstWhere((element) => element.id == trainer_id);
 
-      if(flag==1){
+      if (flag == 1) {
         getMessages();
-        flag=0;
+        flag = 0;
         getTrainerPicture(trainer.picture);
       }
 
@@ -334,7 +328,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                         heroTag: "sendmsg",
                         onPressed: () {
                           sendMessage();
-                          flag=1;
+                          flag = 1;
                           _messageController.clear();
                         },
                         child: Icon(
@@ -410,6 +404,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     String url2 = "http://$ip:8081/api/v1/client/$user_id/addTrainer/$id";
     var response2 = await http.patch(Uri.parse(url2));
     if (response2.statusCode == 200) {
+      trainer_id = id;
       print("add trainer ok");
     }
   }

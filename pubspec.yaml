@@ -39,20 +39,21 @@ dependencies:
   google_fonts: ^2.3.1
   animated_text_kit: ^4.2.1
   image_picker: ^0.8.5
-  editable_image: ^1.0.1
   cool_alert: ^1.1.0
   pedometer: ^3.0.0
-  flutter_circular_chart: ^0.1.0
   pie_chart: ^5.3.0
   permission_handler: ^9.2.0
   stop_watch_timer: ^1.1.0+1
   geolocator: ^8.2.0
   google_maps_flutter: ^2.1.4
-  health: ^3.4.4
   hive: ^2.1.0
   jiffy: ^5.0.0
   hive_flutter: ^1.1.0
   flutter_native_splash: ^2.1.6
+  flutter_background_service: ^2.0.0
+  android_alarm_manager_plus: ^2.0.5
+  shared_preferences: ^2.0.15
+  collection: ^1.15.0
 
 
 dev_dependencies:
