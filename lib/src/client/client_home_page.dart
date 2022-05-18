@@ -27,6 +27,8 @@ import 'package:pie_chart/pie_chart.dart';
 late int todaySteps = 0;
 late int user_id = 0;
 String ip = constants.IP;
+late Stream<StepCount> _stepCountStream;
+late Stream<PedestrianStatus> _pedestrianStatusStream;
 
 class ClientHomePage extends StatefulWidget {
   ClientHomePage({Key? key}) : super(key: key);
@@ -44,8 +46,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   double caloriesGoal = 1400;
   Map<String, double> stepsMap = Map();
   Map<String, double> caloriesMap = Map();
-  late Stream<StepCount> _stepCountStream;
-  late Stream<PedestrianStatus> _pedestrianStatusStream;
+
   Box<int> stepsBox = Hive.box('steps');
   List<Challenge> challenges = [];
   String _status = '?';
@@ -91,15 +92,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
     if (getResponse.statusCode == 200) {
       print("get challenge ok");
-      var challenge = convert.jsonDecode(getResponse.body);
+      if (getResponse.body.isNotEmpty) {
+        var challenge = convert.jsonDecode(getResponse.body);
 
-      String update = "http://$ip:8081/api/v1/challenge/$user_id/update/steps";
-      var updateResponse = await http.patch(Uri.parse(update),
-          body: convert.jsonEncode(
-              {"value": (challenge['challenges']['value'] + todaySteps)}));
-      setState(() {});
-      if (updateResponse.statusCode == 200) {
-        print("update challenge ok");
+        String update =
+            "http://$ip:8081/api/v1/challenge/$user_id/update/steps";
+        var updateResponse = await http.patch(Uri.parse(update),
+            body: convert.jsonEncode(
+                {"value": (challenge['challenges']['value'] + todaySteps)}));
+        setState(() {});
+        if (updateResponse.statusCode == 200) {
+          print("update challenge ok");
+        }
       }
     }
 
@@ -181,7 +185,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   Future<void> initPlatformState() async {
     if (await Permission.activityRecognition.request().isGranted) {
-      _stepCountStream = Pedometer.stepCountStream;
+      _stepCountStream = Pedometer.stepCountStream.asBroadcastStream();
       _stepCountStream.listen(onStepCount).onError(onStepCountError);
     } else {}
     if (!mounted) return;
@@ -203,8 +207,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
     String url = "http://$ip:8081/api/v1/challenge/getChallenges/$user_id";
     var response = await http.get(Uri.parse(url));
 
-    var objJson = jsonDecode(response.body)['challenges'] as List;
-    challenges = objJson.map((json) => Challenge.fromJson(json)).toList();
+    if (response.body.isNotEmpty) {
+      var objJson = jsonDecode(response.body)['challenges'] as List;
+      challenges = objJson.map((json) => Challenge.fromJson(json)).toList();
+    }
     return challenges;
   }
 
@@ -215,260 +221,170 @@ class _ClientHomePageState extends State<ClientHomePage> {
     if (getResponse.statusCode == 200) {
       print(getResponse.body.toString());
 
-      var waterValue =
-          convert.jsonDecode(getResponse.body)['challenges']['value'];
+      if (getResponse.body.isNotEmpty) {
+        var waterValue =
+            convert.jsonDecode(getResponse.body)['challenges']['value'];
 
-      var newWater = waterValue + water;
-      String url2 = "http://$ip:8081/api/v1/challenge/$user_id/update/water";
-      var updateResponse = await http.patch(Uri.parse(url2),
-          body: convert.jsonEncode({"value": newWater}));
-      setState(() {});
-      if (updateResponse.statusCode == 200) {
-        print('update water ok');
+        var newWater = waterValue + water;
+        String url2 = "http://$ip:8081/api/v1/challenge/$user_id/update/water";
+        var updateResponse = await http.patch(Uri.parse(url2),
+            body: convert.jsonEncode({"value": newWater}));
+        setState(() {});
+        if (updateResponse.statusCode == 200) {
+          print('update water ok');
+        }
+      }
+    }
+  }
+
+  updateCals(int cals) async {
+    String url = "http://$ip:8081/api/v1/challenge/$user_id/get/calories";
+    var getResponse = await http.get(Uri.parse(url));
+
+    if (getResponse.statusCode == 200) {
+      print(getResponse.body.toString());
+
+      if (getResponse.body.isNotEmpty) {
+        var calsValue =
+            convert.jsonDecode(getResponse.body)['challenges']['value'];
+
+        var newCals = calsValue + cals;
+        String url2 =
+            "http://$ip:8081/api/v1/challenge/$user_id/update/calories";
+        var updateResponse = await http.patch(Uri.parse(url2),
+            body: convert.jsonEncode({"value": newCals}));
+        setState(() {});
+        if (updateResponse.statusCode == 200) {
+          print('update cals ok');
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getChallenges(),
-        initialData: [],
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          stepsMap.addEntries(<String, double>{
-            "Steps": challenges
-                .firstWhere((element) => element.description == 'steps')
-                .value
-                .toDouble(),
-            "GoalSteps": challenges
-                .firstWhere((element) => element.description == 'steps')
-                .goal
-                .toDouble()
-          }.entries);
-          caloriesMap.addEntries(<String, double>{
-            "Cals": challenges
-                .firstWhere((element) => element.description == 'calories')
-                .value
-                .toDouble(),
-            "GoalCals": challenges
-                .firstWhere((element) => element.description == 'calories')
-                .goal
-                .toDouble()
-          }.entries);
-          return snapshot.hasData
-              ? Scaffold(
-                  resizeToAvoidBottomInset: false,
-                  extendBody: true,
-                  extendBodyBehindAppBar: true,
-                  appBar: AppBar(
-                      title: DefaultTextStyle(
-                        style: const TextStyle(
-                          fontSize: 30.0,
-                        ),
-                        child: AnimatedTextKit(
-                          totalRepeatCount: 3,
-                          repeatForever: false,
-                          animatedTexts: [
-                            TypewriterAnimatedText('Hello $name',
-                                textStyle: TextStyle(
-                                    fontFamily: "Cairo",
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                      centerTitle: true,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0),
-                  body: Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                      gradient: bg_color,
-                    ),
-                    child: Stack(children: [
-                      GridView.count(
-                        crossAxisCount: 2,
-                        children: [
-                          Card(
-                            margin:
-                                EdgeInsets.only(top: 65, left: 35, right: 20),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                            elevation: 10,
-                            child: PieChart(
-                              animationDuration: Duration(milliseconds: 500),
-                              chartRadius: 80,
-                              dataMap: stepsMap,
-                              chartType: ChartType.ring,
-                              ringStrokeWidth: 10,
-                              centerText:
-                                  'Steps\n${challenges.firstWhere((element) => element.description == 'steps').value}/${challenges.firstWhere((element) => element.description == 'steps').goal}',
-                              centerTextStyle: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                              chartValuesOptions: ChartValuesOptions(
-                                  showChartValues: false,
-                                  showChartValueBackground: false),
-                              legendOptions: LegendOptions(
-                                showLegends: false,
-                              ),
-                              colorList: [Colors.red, Colors.black26],
-                              initialAngleInDegree: 180,
-                              degreeOptions: DegreeOptions(initialAngle: 0),
-                            ),
-                          ),
-                          Card(
-                            margin:
-                                EdgeInsets.only(top: 65, left: 20, right: 35),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                            elevation: 10,
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 15.0),
-                                  child: Icon(
-                                    Icons.monitor_heart_rounded,
-                                    color: Colors.red[900],
-                                    size: 40,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10.0),
-                                  child: Text(
-                                    '87 bpm',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600),
-                                  ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+          title: DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 30.0,
+            ),
+            child: AnimatedTextKit(
+              totalRepeatCount: 3,
+              repeatForever: false,
+              animatedTexts: [
+                TypewriterAnimatedText('Hello $name',
+                    textStyle: TextStyle(
+                        fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0),
+      body: Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: bg_color,
+          ),
+          child: FutureBuilder(
+              future: getChallenges(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) print(snapshot.error);
+                return snapshot.hasData
+                    ? GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                        itemBuilder: (context, index) {
+                          final challenge = challenges[index];
+
+                          return challenge.description == 'water'
+                              ? InkWell(
+                                  child: challengeWidget(challenge),
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _showDialog(
+                                              'https://i.pinimg.com/originals/79/c7/ff/79c7ff9d622c8fae535a06898f0d6700.gif',
+                                              'Drink',
+                                              updateWater,
+                                              context),
+                                    );
+                                  },
                                 )
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    _showDialog(context),
-                              );
-                            },
-                            child: Card(
-                              margin:
-                                  EdgeInsets.only(top: 65, left: 35, right: 20),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              elevation: 10,
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 15.0),
-                                    child: Icon(
-                                      Icons.water_drop_rounded,
-                                      color: Colors.blue[900],
-                                      size: 40,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5.0),
-                                    child: Text(
-                                      '${challenges.firstWhere((element) => element.description == 'water').value}/${challenges.firstWhere((element) => element.description == 'water').goal}mL',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Card(
-                            margin:
-                                EdgeInsets.only(top: 65, left: 20, right: 35),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40)),
-                            elevation: 10,
-                            child: PieChart(
-                              chartRadius: 80,
-                              dataMap: caloriesMap,
-                              chartType: ChartType.ring,
-                              ringStrokeWidth: 10,
-                              centerText:
-                                  'Calories\n${challenges.firstWhere((element) => element.description == 'calories').value}/${challenges.firstWhere((element) => element.description == 'calories').goal} kcal',
-                              centerTextStyle: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                              chartValuesOptions: ChartValuesOptions(
-                                  showChartValues: false,
-                                  showChartValueBackground: false),
-                              legendOptions: LegendOptions(
-                                showLegends: false,
-                              ),
-                              colorList: [Colors.red, Colors.black26],
-                              initialAngleInDegree: 180,
-                              degreeOptions: DegreeOptions(initialAngle: 0),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(25),
-                                  topRight: Radius.circular(25)),
-                              color: Colors.transparent),
-                          child: Center(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  HapticFeedback.mediumImpact();
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => RunningPage()));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    elevation: 10,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    fixedSize: Size(75, 75)),
-                                child: Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.redAccent,
-                                  size: 45,
-                                )),
-                          ),
-                        ),
-                      ),
-                    ]),
-                  ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                );
-        });
+                              : challenge.description == 'calories'
+                                  ? InkWell(
+                                      child: challengeWidget(challenge),
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _showDialog(
+                                                  'https://c.tenor.com/H89rnWqDa04AAAAM/happy-birthday-food.gif',
+                                                  'Eat!',
+                                                  updateCals,
+                                                  context),
+                                        );
+                                      },
+                                    )
+                                  : challengeWidget(challenge);
+                        },
+                        itemCount: challenges.length,
+                      )
+                    : Center(
+                        child:
+                            Text('Activate challenges so they show up here!'));
+              })),
+    );
   }
 
-  Widget _showDialog(context) {
+  Widget challengeWidget(Challenge challenge) {
+    return Card(
+      margin: EdgeInsets.only(top: 65, left: 35, right: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      elevation: 10,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: Icon(
+              Icons.emoji_events_rounded,
+              color: Colors.yellow,
+              size: 40,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 0.0),
+            child: Text(
+              '${challenge.description}\n${challenge.value}/${challenge.goal}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _showDialog(gif, text, func, context) {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
             primary: Colors.white, backgroundColor: Colors.red),
         child: new Text(
-          "Drink!",
+          text,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         onPressed: () async {
-          updateWater(num);
+          func(num);
           setState(() {});
           Navigator.of(context).pop();
           num = 0;
@@ -504,9 +420,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(25)),
                     image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            'https://i.pinimg.com/originals/79/c7/ff/79c7ff9d622c8fae535a06898f0d6700.gif'))),
+                        fit: BoxFit.cover, image: NetworkImage(gif))),
               ),
               SizedBox(
                 height: 30,

@@ -7,6 +7,7 @@ import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
 import 'package:cool_alert/cool_alert.dart';
 import 'package:healthier_app/src/login_page.dart';
+import 'package:pedometer/pedometer.dart';
 import './utils/constants.dart' as constants;
 
 import '../main.dart';
@@ -177,53 +178,53 @@ class _SettingsPage extends State<SettingsPage> {
               ],
             ),
             Container(
-              height: MediaQuery.of(context).size.height*.6,
+              height: MediaQuery.of(context).size.height * .6,
               alignment: Alignment.bottomCenter,
               child: OutlinedButton(
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                  EdgeInsets.only(
-                    left: 60,
-                    right: 60,
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.only(
+                      left: 60,
+                      right: 60,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Sign Out"),
+                          content: Text("Are you sure you want to Sign Out?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()),
+                                    (Route<dynamic> route) => false);
+                              },
+                              child: Text("Continue"),
+                            )
+                          ],
+                        );
+                      });
+                },
+                child: Text(
+                  "SIGN OUT",
+                  style: TextStyle(
+                    fontSize: 16,
+                    letterSpacing: 2.2,
+                    color: Colors.black,
                   ),
                 ),
               ),
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Sign Out"),
-                        content: Text("Are you sure you want to Sign Out?"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Cancel"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
-                                      (_) => false);
-                            },
-                            child: Text("Continue"),
-                          )
-                        ],
-                      );
-                    });
-              },
-              child: Text(
-                "SIGN OUT",
-                style: TextStyle(
-                  fontSize: 16,
-                  letterSpacing: 2.2,
-                  color: Colors.black,
-                ),
-              ),
-            ),
             ),
           ],
         ),

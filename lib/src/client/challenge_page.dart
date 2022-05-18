@@ -18,22 +18,49 @@ class _ChallengesPageState extends State<ChallengesPage> {
   String ip = IP;
   List<Challenge> availableChallenges = [];
   List<Challenge> activeChallenges = [];
+  List<Challenge> allChallenges = [];
+  List<Challenge> completedChallenges = [];
 
   TextEditingController _goalController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getAvailableChallenges();
+
+    getActiveChallenges();
+    getAllChallenges();
+    getCompleted();
   }
 
-  getAvailableChallenges() async {
-    String url = "http://$ip:8081/api/v1/availableChallenges/get";
+  getCompleted() async {
+    String url = "http://$ip:8081/api/v1/challenge/completed/$user_id";
     var response = await http.get(Uri.parse(url));
 
-    var objJson = jsonDecode(response.body)['challenges'] as List;
-    availableChallenges =
-        objJson.map((json) => Challenge.fromJson(json)).toList();
+    if (response.body.isNotEmpty) {
+      var objJson = jsonDecode(response.body)['challenges'] as List;
+      completedChallenges =
+          objJson.map((json) => Challenge.fromJson(json)).toList();
+    }
+  }
+
+  getAllChallenges() async {
+    String url = "http://$ip:8081/api/v1/availableChallenges/get";
+    var response = await http.get(Uri.parse(url));
+    if (response.body.isNotEmpty) {
+      var objJson = jsonDecode(response.body)['challenges'] as List;
+      allChallenges = objJson.map((json) => Challenge.fromJson(json)).toList();
+    }
+  }
+
+  getActiveChallenges() async {
+    String url = "http://$ip:8081/api/v1/challenge/getChallenges/$user_id";
+    var response = await http.get(Uri.parse(url));
+    if (response.body.isNotEmpty) {
+      var objJson = jsonDecode(response.body)['challenges'] as List;
+      activeChallenges =
+          objJson.map((json) => Challenge.fromJson(json)).toList();
+      activeChallenges.removeWhere((element) => element.value >= element.goal);
+    }
   }
 
   addChallenge(description, goal, value) async {
@@ -71,6 +98,9 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
   @override
   Widget build(BuildContext context) {
+    getActiveChallenges();
+    getAllChallenges();
+    getCompleted();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBody: true,
@@ -90,14 +120,30 @@ class _ChallengesPageState extends State<ChallengesPage> {
             gradient: bg_color,
           ),
           child: SafeArea(
-            child: Stack(
+            child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'All Challenges',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )),
+                ),
+                Divider(
+                  height: 5,
+                  color: Colors.white,
+                ),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Container(
                     height: 100,
                     width: double.infinity,
-                    child: availableChallenges.length > 0
+                    child: allChallenges.isNotEmpty
                         ? GridView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.all(10),
@@ -105,11 +151,13 @@ class _ChallengesPageState extends State<ChallengesPage> {
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 1, mainAxisSpacing: 10),
                             itemBuilder: (context, index) {
-                              final challenge = availableChallenges[index];
+                              final challenge = allChallenges[index];
+
                               return InkWell(
                                 child: CircleAvatar(
                                   backgroundColor: Colors.white,
-                                  child: Text(challenge.description),
+                                  child: Text(challenge.description,
+                                      textAlign: TextAlign.center),
                                   radius: 20,
                                 ),
                                 onTap: () {
@@ -121,9 +169,114 @@ class _ChallengesPageState extends State<ChallengesPage> {
                                 },
                               );
                             },
-                            itemCount: availableChallenges.length,
+                            itemCount: allChallenges.length,
                           )
-                        : Container(),
+                        : Center(
+                            child: Text(
+                                'You\'ve already started all available challenges!'),
+                          ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Active Challenges',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )),
+                ),
+                Divider(
+                  height: 5,
+                  color: Colors.white,
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    height: 100,
+                    width: double.infinity,
+                    child: activeChallenges.isNotEmpty
+                        ? GridView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.all(10),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 1, mainAxisSpacing: 10),
+                            itemBuilder: (context, index) {
+                              final challenge = activeChallenges[index];
+                              return InkWell(
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Text(
+                                      '${challenge.description}\n${((challenge.value / challenge.goal) * 100).toStringAsFixed(2)}%',
+                                      textAlign: TextAlign.center),
+                                  radius: 20,
+                                ),
+                                onTap: () {},
+                              );
+                            },
+                            itemCount: activeChallenges.length,
+                          )
+                        : Center(
+                            child: Text(
+                                'You\'ve already completed all active challenges or didn\'t start one yet!',
+                                textAlign: TextAlign.center),
+                          ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Completed Challenges',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
+                      )),
+                ),
+                Divider(
+                  height: 5,
+                  color: Colors.white,
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    height: 100,
+                    width: double.infinity,
+                    child: completedChallenges.isNotEmpty
+                        ? GridView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.all(10),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 1, mainAxisSpacing: 10),
+                            itemBuilder: (context, index) {
+                              final challenge = completedChallenges[index];
+
+                              return InkWell(
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Text(
+                                    '${challenge.description}\nCompleted',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  radius: 20,
+                                ),
+                                onTap: () {},
+                              );
+                            },
+                            itemCount: completedChallenges.length,
+                          )
+                        : Center(
+                            child: Text(
+                                'You haven\'t completed any challenges yet!'),
+                          ),
                   ),
                 ),
               ],
@@ -185,5 +338,11 @@ class _ChallengesPageState extends State<ChallengesPage> {
             children: <Widget>[yesButton, noButton])
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _goalController.dispose();
   }
 }

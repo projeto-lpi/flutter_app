@@ -4,17 +4,12 @@ import 'dart:typed_data';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:healthier_app/src/models/users.dart';
-import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:healthier_app/src/settings_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
-import './utils/constants.dart' as constants;
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:image_picker/image_picker.dart';
 
+import './utils/constants.dart' as constants;
 import '../main.dart';
 import 'models/steps.dart';
 
@@ -36,7 +31,7 @@ class _ProfilePage extends State<ProfilePage> {
   late Uint8List imageBytes = base64Decode(picture);
   List<Steps> steps = [];
   int flag = 1;
-  LinearGradient bg_color=constants.bg_color;
+  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -55,7 +50,6 @@ class _ProfilePage extends State<ProfilePage> {
     });
     return results;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +133,6 @@ class _ProfilePage extends State<ProfilePage> {
                     },
                   ),
                 ),
-
               ]),
               Text(
                 name,
@@ -150,10 +143,8 @@ class _ProfilePage extends State<ProfilePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
             ],
           ),
-
         ),
       ),
     );
@@ -207,6 +198,4 @@ class _ProfilePage extends State<ProfilePage> {
       );
     }
   }
-
-
 }

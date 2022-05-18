@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'challenge_page.dart';
-import 'client_home_page.dart';
 import 'package:healthier_app/src/client/nutri_page.dart';
-import 'package:healthier_app/src/profile_page.dart';
 import 'package:healthier_app/src/client/training_page.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
+import 'challenge_page.dart';
+import 'client_home_page.dart';
 import 'client_profile_page.dart';
 
 class MyHomePage extends StatefulWidget {

@@ -109,78 +109,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   Widget drawBody() {
     if (trainer_id == 0) {
       if (trainers.isNotEmpty) {
-        return Container(
-          alignment: Alignment.center,
-          height: MediaQuery.of(context).size.height * 0.6,
-          width: MediaQuery.of(context).size.width,
-          child: PageView.builder(
-            physics: AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final trainer = trainers[index];
-              getTrainerPicture(trainer.picture);
-              return Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 150,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: trainer.picture == ""
-                                  ? NetworkImage(
-                                          'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                      as ImageProvider
-                                  : MemoryImage(imgBytes) as ImageProvider),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Text(
-                        trainer.name,
-                        style: TextStyle(fontSize: 25.0, color: Colors.red),
-                      ),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Text(
-                        trainer.email,
-                        style: TextStyle(fontSize: 15.0, color: Colors.red),
-                      ),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          elevation: 5,
-                          primary: Colors.white,
-                        ),
-                        label: Text('Add Trainer'),
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) =>
-                                _showDialog(trainer, context),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-            itemCount: trainers.length,
-          ),
-        );
+        return drawTrainers();
       } else {
         return Center(
           child: CircularProgressIndicator(
@@ -191,8 +120,8 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     } else {
       allMessages = senderMessages + receiverMessages;
       allMessages.sort((a, b) => a.id.compareTo(b.id));
-      Trainer trainer =
-          trainers.firstWhere((element) => element.id == trainer_id);
+
+      var trainer = trainers.firstWhere((element) => element.id == trainer_id);
 
       if (flag == 1) {
         getMessages();
@@ -200,154 +129,233 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
         getTrainerPicture(trainer.picture);
       }
 
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.red,
-          flexibleSpace: SafeArea(
-            child: Container(
-              padding: EdgeInsets.only(right: 16),
-              child: Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 12,
-                  ),
-                  CircleAvatar(
-                      maxRadius: 20,
-                      backgroundImage: trainer.picture == ""
-                          ? NetworkImage(
-                                  'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                              as ImageProvider
-                          : MemoryImage(imgBytes) as ImageProvider),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          trainer.name,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          trainer.email,
-                          style: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.settings,
-                    color: Colors.black54,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 50.0),
-              child: ListView.builder(
-                itemCount: allMessages.length,
-                shrinkWrap: true,
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding:
-                        EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                    child: Align(
-                      alignment: allMessages[index].from_id == user_id
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: (allMessages[index].from_id == user_id
-                                ? Colors.red[400]
-                                : Colors.grey.shade200)),
-                        child: Text(allMessages[index].content),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 0.0),
-                child: Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  height: 60,
-                  width: double.infinity,
-                  color: Colors.white,
-                  child: Row(
+      return drawChat(trainer);
+    }
+  }
+
+  Scaffold drawChat(Trainer trainer) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.red,
+        flexibleSpace: SafeArea(
+          child: Container(
+            padding: EdgeInsets.only(right: 16),
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 12,
+                ),
+                CircleAvatar(
+                    maxRadius: 20,
+                    backgroundImage: trainer.picture == ""
+                        ? NetworkImage(
+                                'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                            as ImageProvider
+                        : MemoryImage(imgBytes) as ImageProvider),
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.red[400],
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
+                      Text(
+                        trainer.name,
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       SizedBox(
-                        width: 15,
+                        height: 2,
                       ),
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          decoration: InputDecoration(
-                              hintText: "Write message...",
-                              hintStyle: TextStyle(color: Colors.black54),
-                              border: InputBorder.none),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      FloatingActionButton(
-                        heroTag: "sendmsg",
-                        onPressed: () {
-                          sendMessage();
-                          flag = 1;
-                          _messageController.clear();
-                        },
-                        child: Icon(
-                          Icons.send,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        backgroundColor: Colors.red[400],
-                        elevation: 0,
+                      Text(
+                        trainer.email,
+                        style: TextStyle(
+                            color: Colors.grey.shade600, fontSize: 13),
                       ),
                     ],
                   ),
                 ),
+                Icon(
+                  Icons.settings,
+                  color: Colors.black54,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 50.0),
+            child: ListView.builder(
+              itemCount: allMessages.length,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              itemBuilder: (context, index) {
+                return Container(
+                  padding:
+                      EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
+                  child: Align(
+                    alignment: allMessages[index].from_id == user_id
+                        ? Alignment.topRight
+                        : Alignment.topLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: (allMessages[index].from_id == user_id
+                              ? Colors.red[400]
+                              : Colors.grey.shade200)),
+                      child: Text(allMessages[index].content),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 0.0),
+              child: Container(
+                padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                height: 60,
+                width: double.infinity,
+                color: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.red[400],
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                            hintText: "Write message...",
+                            hintStyle: TextStyle(color: Colors.black54),
+                            border: InputBorder.none),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    FloatingActionButton(
+                      heroTag: "sendmsg",
+                      onPressed: () {
+                        sendMessage();
+                        flag = 1;
+                        _messageController.clear();
+                      },
+                      child: Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      backgroundColor: Colors.red[400],
+                      elevation: 0,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container drawTrainers() {
+    return Container(
+      alignment: Alignment.center,
+      height: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width,
+      child: PageView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final trainer = trainers[index];
+          getTrainerPicture(trainer.picture);
+          return Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Card(
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(35)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 150,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: trainer.picture == ""
+                              ? NetworkImage(
+                                      'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                  as ImageProvider
+                              : MemoryImage(imgBytes) as ImageProvider),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    trainer.name,
+                    style: TextStyle(fontSize: 25.0, color: Colors.red),
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    trainer.email,
+                    style: TextStyle(fontSize: 15.0, color: Colors.red),
+                  ),
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      elevation: 5,
+                      primary: Colors.white,
+                    ),
+                    label: Text('Add Trainer'),
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            _showDialog(trainer, context),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: trainers.length,
+      ),
+    );
   }
 
   getTrainerPicture(String picture) {

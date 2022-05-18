@@ -157,13 +157,23 @@ class _ProfilePage extends State<ClientProfilePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              Divider(
+                height: 5,
+                color: Colors.white,
+              ),
               Padding(
                 padding:
                     const EdgeInsets.only(right: 18.0, left: 18, bottom: 18),
                 child: SfCartesianChart(
+                    title: ChartTitle(
+                        text: 'Steps',
+                        textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                     primaryXAxis: CategoryAxis(),
                     primaryYAxis:
-                        NumericAxis(minimum: 0, maximum: 3000, interval: 1000),
+                        NumericAxis(minimum: 0, maximum: 2000, interval: 250),
                     series: <ChartSeries<Steps, String>>[
                       ColumnSeries<Steps, String>(
                           dataSource: steps.length < 5
@@ -238,8 +248,10 @@ class _ProfilePage extends State<ClientProfilePage> {
   Future<List<Steps>> getHistorySteps() async {
     String url = "http://$ip:8081/api/v1/steps/getStepsHistory/$user_id";
     var response = await http.get(Uri.parse(url));
-    var jsonResponse = jsonDecode(response.body)['steps'] as List;
-    steps = jsonResponse.map((json) => Steps.fromJson(json)).toList();
+    if (response.body.isNotEmpty) {
+      var jsonResponse = jsonDecode(response.body)['steps'] as List;
+      steps = jsonResponse.map((json) => Steps.fromJson(json)).toList();
+    }
 
     return steps;
   }
