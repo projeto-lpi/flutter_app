@@ -1,37 +1,25 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print
 
-import 'package:flutter/material.dart';
-import 'package:healthier_app/src/utils/jwt.dart';
-import 'package:pie_chart/pie_chart.dart';
-import 'package:healthier_app/src/login_page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import 'dart:convert';
-import 'package:healthier_app/main.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:pedometer/pedometer.dart';
-import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:healthier_app/main.dart';
 import 'package:healthier_app/src/utils/constants.dart' as constants;
+import 'package:healthier_app/src/utils/jwt.dart';
 
 class NutriHomePage extends StatefulWidget {
-  NutriHomePage({Key? key}) : super(key: key);
+  const NutriHomePage({Key? key}) : super(key: key);
 
   @override
   State<NutriHomePage> createState() => _NutriHomePageState();
 }
 
-
-
 class _NutriHomePageState extends State<NutriHomePage> {
   late String name = "";
   String ip = constants.IP;
-  LinearGradient bg_color=constants.bg_color;
+  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
-
     getUsername();
     super.initState();
   }

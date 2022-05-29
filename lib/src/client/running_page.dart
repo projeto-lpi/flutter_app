@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:healthier_app/src/client/client_home_page.dart';
@@ -27,7 +29,7 @@ class _RunningPageState extends State<RunningPage> {
     northeast: LatLng(42.07892, -6.75719),
     southwest: LatLng(32.63333, -28.7),
   );
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   late Position _currentPosition;
 
@@ -46,10 +48,8 @@ class _RunningPageState extends State<RunningPage> {
   }
 
   Future _calculateDistance() async {
-    LocationPermission permission;
     final GoogleMapController controller = await _controller.future;
 
-    permission = await Geolocator.requestPermission();
     _positionStream = Geolocator.getPositionStream(
             locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
         .listen((Position position) async {
@@ -65,16 +65,14 @@ class _RunningPageState extends State<RunningPage> {
           setState(() {
             _currentPosition = position;
             locations.add(_currentPosition);
-            if (_currentPosition != null) {
-              CameraPosition cameraPosition = CameraPosition(
-                  target: LatLng(
-                      _currentPosition.latitude, _currentPosition.longitude),
-                  zoom: cameraZoom,
-                  tilt: cameraTilt,
-                  bearing: cameraBearing);
-              controller.animateCamera(
-                  CameraUpdate.newCameraPosition(cameraPosition));
-            }
+            CameraPosition cameraPosition = CameraPosition(
+                target: LatLng(
+                    _currentPosition.latitude, _currentPosition.longitude),
+                zoom: cameraZoom,
+                tilt: cameraTilt,
+                bearing: cameraBearing);
+            controller
+                .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
             if (locations.length > 1) {
               _previousPosition = locations.elementAt(locations.length - 2);
 
@@ -330,12 +328,13 @@ class _RunningPageState extends State<RunningPage> {
     Widget doneButton = TextButton(
         style: TextButton.styleFrom(
             primary: Colors.white, backgroundColor: Colors.red),
-        child: new Text(
+        child: Text(
           text,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         onPressed: () async {
           _totalDistance = 0;
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
         });
 
@@ -383,6 +382,6 @@ class _RunningPageState extends State<RunningPage> {
   void dispose() async {
     super.dispose();
     await _stopWatchTimer.dispose();
-    _positionStream.cancel();
+    await _positionStream.cancel();
   }
 }

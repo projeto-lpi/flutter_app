@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, prefer_const_constructors, prefer_const_constructors_in_immutables, body_might_complete_normally_nullable
+
 import 'dart:convert';
 
 import 'package:cool_alert/cool_alert.dart';
@@ -21,7 +23,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
   List<Challenge> allChallenges = [];
   List<Challenge> completedChallenges = [];
 
-  TextEditingController _goalController = TextEditingController();
+  final TextEditingController _goalController = TextEditingController();
 
   @override
   void initState() {
@@ -289,7 +291,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
             primary: Colors.white, backgroundColor: Colors.red),
-        child: new Text(
+        child: const Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),

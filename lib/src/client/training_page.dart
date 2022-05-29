@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new, non_constant_identifier_names, avoid_print
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -33,7 +33,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
   LinearGradient bg_color = constants.bg_color;
-  TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
 
   int flag = 1;
 
@@ -97,17 +97,23 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     var response = await http.get(Uri.parse(url));
 
     var objJson = jsonDecode(response.body)['senderMessages'] as List;
-    senderMessages =
-        objJson.map((senderjson) => Message.fromJson(senderjson)).toList();
 
     var receiverJson = jsonDecode(response.body)['receiverMessages'] as List;
-    receiverMessages = receiverJson
-        .map((receiverjson) => Message.fromJson(receiverjson))
-        .toList();
+
+    setState(() {
+      senderMessages =
+          objJson.map((senderjson) => Message.fromJson(senderjson)).toList();
+      receiverMessages = receiverJson
+          .map((receiverjson) => Message.fromJson(receiverjson))
+          .toList();
+    });
   }
 
   Widget drawBody() {
     if (trainer_id == 0) {
+      if (trainers.isEmpty) {
+        getTrainers();
+      }
       if (trainers.isNotEmpty) {
         return drawTrainers();
       } else {
@@ -196,23 +202,27 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10),
               itemBuilder: (context, index) {
-                return Container(
-                  padding:
-                      EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                  child: Align(
-                    alignment: allMessages[index].from_id == user_id
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: (allMessages[index].from_id == user_id
-                              ? Colors.red[400]
-                              : Colors.grey.shade200)),
-                      child: Text(allMessages[index].content),
-                    ),
-                  ),
-                );
+                return allMessages.isEmpty == true
+                    ? Center(
+                        child: Text('No messages available'),
+                      )
+                    : Container(
+                        padding: EdgeInsets.only(
+                            left: 16, right: 16, top: 5, bottom: 5),
+                        child: Align(
+                          alignment: allMessages[index].from_id == user_id
+                              ? Alignment.topRight
+                              : Alignment.topLeft,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: (allMessages[index].from_id == user_id
+                                    ? Colors.red[400]
+                                    : Colors.grey.shade200)),
+                            child: Text(allMessages[index].content),
+                          ),
+                        ),
+                      );
               },
             ),
           ),
@@ -371,9 +381,8 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         onPressed: () async {
-          setState(() {
-            addTrainer(item.id);
-          });
+          addTrainer(item.id);
+
           Navigator.pop(context);
         });
 
@@ -414,6 +423,9 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     if (response2.statusCode == 200) {
       trainer_id = id;
       print("add trainer ok");
+      setState(() {
+        trainer_id = id;
+      });
     }
   }
 

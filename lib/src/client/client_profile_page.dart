@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -26,7 +28,7 @@ class _ProfilePage extends State<ClientProfilePage> {
   late int user_id = 0;
   String ip = constants.IP;
   final picker = ImagePicker();
-  File? _image = null;
+  File? _image;
   bool button = false;
   String picture = "";
   late Uint8List imageBytes = base64Decode(picture);
@@ -53,7 +55,7 @@ class _ProfilePage extends State<ClientProfilePage> {
   }
 
   DateTime formatDate(dayOfYear) {
-    int millisInADay = Duration(days: 1).inMilliseconds; // 86400000
+    int millisInADay = const Duration(days: 1).inMilliseconds; // 86400000
     int millisDayOfYear = dayOfYear * millisInADay;
     int millisecondsSinceEpoch =
         DateTime(DateTime.now().year).millisecondsSinceEpoch;
@@ -90,7 +92,7 @@ class _ProfilePage extends State<ClientProfilePage> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: const Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -101,7 +103,7 @@ class _ProfilePage extends State<ClientProfilePage> {
               ]
             : <Widget>[
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: const Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -126,7 +128,8 @@ class _ProfilePage extends State<ClientProfilePage> {
                   backgroundImage: _image == null
                       ? (picture != ""
                           ? MemoryImage(imageBytes) as ImageProvider
-                          : AssetImage('assets/images/foto.jpg'))
+                          : const AssetImage(
+                              'assets/images/default-user-image.png'))
                       : FileImage(File(_image!.path)),
                   radius: 50,
                 ),
@@ -136,11 +139,12 @@ class _ProfilePage extends State<ClientProfilePage> {
                     child: Container(
                       height: 25,
                       width: 25,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.black,
                       ),
-                      child: Icon(Icons.edit, color: Colors.white, size: 20),
+                      child:
+                          const Icon(Icons.edit, color: Colors.white, size: 20),
                     ),
                     onTap: () {
                       getImage();
@@ -150,14 +154,14 @@ class _ProfilePage extends State<ClientProfilePage> {
               ]),
               Text(
                 name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
-              Divider(
+              const Divider(
                 height: 5,
                 color: Colors.white,
               ),
@@ -167,7 +171,7 @@ class _ProfilePage extends State<ClientProfilePage> {
                 child: SfCartesianChart(
                     title: ChartTitle(
                         text: 'Steps',
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold)),
@@ -184,7 +188,7 @@ class _ProfilePage extends State<ClientProfilePage> {
                           yValueMapper: (Steps data, _) => data.stepCount,
                           name: 'Gold',
                           color: Colors.white,
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(5),
                               topLeft: Radius.circular(5)))
                     ]),
@@ -220,7 +224,7 @@ class _ProfilePage extends State<ClientProfilePage> {
   }
 
   buildPicture() {
-    if (picture != "" || picture == null) {
+    if (picture != "") {
       String profileUrl = picture;
       profileUrl = profileUrl.substring(profileUrl.length);
       imageBytes = base64.decode(profileUrl);

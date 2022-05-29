@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class Clients {
   late int id;
   late String age;
@@ -13,6 +15,6 @@ class Clients {
 
   factory Clients.fromJson(dynamic json) {
     return Clients(json['ID'], json['age'], json['weight'], json['height'],
-        json['gender'],json["trainer_id"],json['nutri_id'],json["user_id"]);
+        json['gender'], json["trainer_id"], json['nutri_id'], json["user_id"]);
   }
 }

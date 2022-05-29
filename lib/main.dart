@@ -5,13 +5,13 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hive/hive.dart';
+import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/login_page.dart';
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 /// The [SharedPreferences] key to access the alarm fire count.
 const String countKey = 'count';
@@ -31,8 +31,6 @@ void main() async {
   await Hive.openBox<int>('steps');
   FlutterNativeSplash();
   AndroidAlarmManager.initialize();
-// Register the UI isolate's SendPort to allow for communication from the
-  // background isolate.
   IsolateNameServer.registerPortWithName(
     port.sendPort,
     isolateName,
@@ -41,10 +39,10 @@ void main() async {
   if (!prefs!.containsKey(countKey)) {
     await prefs!.setInt(countKey, 0);
   }
-
   runApp(MyApp());
 }
 
+// ignore: use_key_in_widget_constructors
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

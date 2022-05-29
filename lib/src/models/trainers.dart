@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:healthier_app/src/models/users.dart';
 
 class Trainer extends Users {

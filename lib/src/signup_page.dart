@@ -1,17 +1,19 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, prefer_final_fields, prefer_typing_uninitialized_variables, avoid_print
 
-import 'package:flutter/material.dart';
-import 'login_page.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import './utils/constants.dart' as constants;
-import 'dart:convert';
-import '../main.dart';
 import 'dart:async';
-import 'package:healthier_app/src/client/client_home_page.dart';
+import 'dart:convert' as convert;
+import 'dart:convert';
+
+import 'package:cool_alert/cool_alert.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import './utils/constants.dart' as constants;
+import '../main.dart';
+import 'login_page.dart';
 
 class SignupPage extends StatefulWidget {
-  SignupPage({Key? key}) : super(key: key);
+  const SignupPage({Key? key}) : super(key: key);
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -29,12 +31,10 @@ class _SignupPageState extends State<SignupPage> {
   bool genderSwitch = false;
   String gender = "";
   String ip = constants.IP;
-  LinearGradient bg_color=constants.bg_color;
+  LinearGradient bg_color = constants.bg_color;
   int flag = 0;
 
-  bool _validate_email = false,
-      _validate_password = false,
-      _validate_name = false;
+  bool _validate_email = false;
   int state = 0;
 
   @override
@@ -43,6 +43,14 @@ class _SignupPageState extends State<SignupPage> {
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
+          actions: [
+            BackButton(
+              onPressed: () async {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+            )
+          ],
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
@@ -125,8 +133,8 @@ class _SignupPageState extends State<SignupPage> {
                                         weight,
                                         height,
                                         (genderSwitch
-                                            ? gender = "female"
-                                            : gender = "male"),
+                                            ? gender = "male"
+                                            : gender = "female"),
                                         role,
                                         context);
                                   } else if (flag == 0) {
@@ -321,20 +329,18 @@ class _SignupPageState extends State<SignupPage> {
       String gender,
       String role,
       BuildContext context) async {
-    var response = await http.post(
-        //Uri.parse('http://192.168.75.1:8081/api/v1/auth/register'), //global
-        //Uri.parse('http://192.168.56.1:8081/api/v1/auth/register'), //damss
-        Uri.parse('http://$ip:8081/api/v1/auth/register'), //baguetes
-        body: convert.jsonEncode({
-          "name": name,
-          "email": email,
-          "password": password,
-          "gender": gender,
-          "age": age,
-          "weight": weight,
-          "height": height,
-          "role": role
-        }));
+    var response =
+        await http.post(Uri.parse('http://$ip:8081/api/v1/auth/register'),
+            body: convert.jsonEncode({
+              "name": name,
+              "email": email,
+              "password": password,
+              "gender": gender,
+              "age": age,
+              "weight": weight,
+              "height": height,
+              "role": role
+            }));
     var jsonResponse;
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
@@ -346,6 +352,11 @@ class _SignupPageState extends State<SignupPage> {
       }
       print('register ok');
 
+      CoolAlert.show(
+        context: context,
+        type: CoolAlertType.success,
+        text: "Your account as been created successfully!",
+      );
       return 1;
     }
     state = 0;

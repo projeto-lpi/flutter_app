@@ -1,10 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:healthier_app/src/client/challenge_page.dart';
-import 'package:healthier_app/src/client/client_home_page.dart';
-import 'package:healthier_app/src/client/nutri_page.dart';
 import 'package:healthier_app/src/nutri/chat_page.dart';
 import 'package:healthier_app/src/profile_page.dart';
-import 'package:healthier_app/src/client/training_page.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
 import 'nutri_home_page.dart';
@@ -30,7 +28,7 @@ class _NutriMyHomePageState extends State<NutriMyHomePage> {
 
   Widget getBody() {
     List<Widget> pages = [
-      NutriHomePage(),
+      //NutriHomePage(),
       NutriNutriPage(),
       ProfilePage(),
     ];
@@ -50,13 +48,6 @@ class _NutriMyHomePageState extends State<NutriMyHomePage> {
       curve: Curves.easeIn,
       onItemSelected: (index) => setState(() => _currentIndex = index),
       items: <BottomNavyBarItem>[
-        BottomNavyBarItem(
-          icon: Icon(Icons.home_rounded),
-          title: Text('Home'),
-          activeColor: Colors.red,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
         BottomNavyBarItem(
           icon: Icon(Icons.fastfood_rounded),
           title: Text('Nutritionist '),

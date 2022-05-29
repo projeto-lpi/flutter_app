@@ -1,11 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:healthier_app/src/client/challenge_page.dart';
-import 'package:healthier_app/src/client/client_home_page.dart';
-import 'package:healthier_app/src/client/nutri_page.dart';
 import 'package:healthier_app/src/profile_page.dart';
-import 'package:healthier_app/src/client/training_page.dart';
-import 'package:healthier_app/src/trainer/trainer_home_page.dart';
 import 'package:healthier_app/src/trainer/chat_page.dart';
+import 'package:healthier_app/src/trainer/trainer_home_page.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
 class TrainerMyHomePage extends StatefulWidget {
@@ -29,7 +27,7 @@ class _TrainerMyHomePageState extends State<TrainerMyHomePage> {
 
   Widget getBody() {
     List<Widget> pages = [
-      TrainerHomePage(),
+      //TrainerHomePage(),
       TrainerTrainingPage(),
       ProfilePage(),
     ];
@@ -49,13 +47,6 @@ class _TrainerMyHomePageState extends State<TrainerMyHomePage> {
       curve: Curves.easeIn,
       onItemSelected: (index) => setState(() => _currentIndex = index),
       items: <BottomNavyBarItem>[
-        BottomNavyBarItem(
-          icon: Icon(Icons.home_rounded),
-          title: Text('Home'),
-          activeColor: Colors.red,
-          inactiveColor: _inactiveColor,
-          textAlign: TextAlign.center,
-        ),
         BottomNavyBarItem(
           icon: Icon(Icons.directions_run_rounded),
           title: Text('Training'),

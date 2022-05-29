@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:convert';
-
 class Users {
   late int id;
   late String name;
@@ -13,6 +10,4 @@ class Users {
     return Users(json['ID'], json['email'], json['password'], json['name'],
         json['picture']);
   }
-
-
 }

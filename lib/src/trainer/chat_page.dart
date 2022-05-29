@@ -1,19 +1,18 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new, non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/models/clients.dart';
 import 'package:healthier_app/src/models/messages.dart';
-import 'package:healthier_app/src/models/trainers.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
+
 import '../../main.dart';
+import '../chat_detail.dart';
 import '../models/users.dart';
 import '../utils/constants.dart' as constants;
-import '../chat_detail.dart';
 
 class TrainerTrainingPage extends StatefulWidget {
   const TrainerTrainingPage({Key? key}) : super(key: key);
@@ -97,58 +96,63 @@ class _TrainerTrainingPageState extends State<TrainerTrainingPage> {
                     .firstWhere((element) => element.id == client.user_id);
 
                 getTrainerPicture(user.picture);
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return ChatDetailPage(
-                          client_name: user.name,
-                          client_email: user.email,
-                          client_id: user.id,
-                          client_picture: user.picture,
-                          worker_id: user_id);
-                    }));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, right: 16, top: 10, bottom: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
+                return clients.isEmpty == true
+                    ? Center(
+                        child: Text('No clients available'),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ChatDetailPage(
+                                client_name: user.name,
+                                client_email: user.email,
+                                client_id: user.id,
+                                client_picture: user.picture,
+                                worker_id: user_id);
+                          }));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, top: 10, bottom: 10),
                           child: Row(
                             children: <Widget>[
-                              CircleAvatar(
-                                backgroundImage: user.picture == ""
-                                    ? NetworkImage(
-                                        'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                    : MemoryImage(imgBytes) as ImageProvider,
-                                maxRadius: 30,
-                              ),
-                              SizedBox(
-                                width: 16,
-                              ),
                               Expanded(
-                                child: Container(
-                                  color: Colors.transparent,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        user.name,
-                                        style: TextStyle(fontSize: 23),
+                                child: Row(
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      backgroundImage: user.picture == ""
+                                          ? NetworkImage(
+                                              'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                          : MemoryImage(imgBytes)
+                                              as ImageProvider,
+                                      maxRadius: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              user.name,
+                                              style: TextStyle(fontSize: 23),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
               },
             )
           ],
@@ -162,9 +166,9 @@ class _TrainerTrainingPageState extends State<TrainerTrainingPage> {
     var response = await http.get(Uri.parse(url));
     var objJson = jsonDecode(response.body)['clients'] as List;
     clients = objJson.map((json) => Clients.fromJson(json)).toList();
-    clients.forEach((element) {
+    for (var element in clients) {
       getClientData(element.user_id, clientsData);
-    });
+    }
   }
 
   getClientData(id, usersData) async {

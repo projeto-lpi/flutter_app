@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, prefer_const_constructors_in_immutables, sized_box_for_whitespace
 
 import 'dart:async';
 import 'dart:convert' as convert;
@@ -22,13 +22,11 @@ import 'package:http/http.dart' as http;
 import 'package:jiffy/jiffy.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pie_chart/pie_chart.dart';
 
 late int todaySteps = 0;
 late int user_id = 0;
 String ip = constants.IP;
 late Stream<StepCount> _stepCountStream;
-late Stream<PedestrianStatus> _pedestrianStatusStream;
 
 class ClientHomePage extends StatefulWidget {
   ClientHomePage({Key? key}) : super(key: key);
@@ -44,13 +42,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
   double goalSteps = 6000;
   double caloriesCurrent = 635;
   double caloriesGoal = 1400;
-  Map<String, double> stepsMap = Map();
-  Map<String, double> caloriesMap = Map();
+  Map<String, double> stepsMap = {};
+  Map<String, double> caloriesMap = {};
 
   Box<int> stepsBox = Hive.box('steps');
   List<Challenge> challenges = [];
-  String _status = '?';
-  int _steps = 0;
   double water = 0.0;
   LinearGradient bg_color = constants.bg_color;
 
@@ -62,8 +58,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
     getChallenges();
 
     initPlatformState();
-    AndroidAlarmManager.initialize();
-    _saveSteps();
 
     // Register for events from the background isolate. These messages will
     // always coincide with an alarm firing.
@@ -82,37 +76,33 @@ class _ClientHomePageState extends State<ClientHomePage> {
         }));
 
     if (response.statusCode == 200) {
-      print('save daily steps ok');
-    } else {
-      print('save daily steps not ok');
-    }
+      String get = "http://$ip:8081/api/v1/challenge/$user_id/get/steps";
+      var getResponse = await http.get(Uri.parse(get));
 
-    String get = "http://$ip:8081/api/v1/challenge/$user_id/get/steps";
-    var getResponse = await http.get(Uri.parse(get));
+      if (getResponse.statusCode == 200) {
+        print("get challenge ok");
+        if (getResponse.body.isNotEmpty) {
+          var challenge = convert.jsonDecode(getResponse.body);
 
-    if (getResponse.statusCode == 200) {
-      print("get challenge ok");
-      if (getResponse.body.isNotEmpty) {
-        var challenge = convert.jsonDecode(getResponse.body);
-
-        String update =
-            "http://$ip:8081/api/v1/challenge/$user_id/update/steps";
-        var updateResponse = await http.patch(Uri.parse(update),
-            body: convert.jsonEncode(
-                {"value": (challenge['challenges']['value'] + todaySteps)}));
-        setState(() {});
-        if (updateResponse.statusCode == 200) {
-          print("update challenge ok");
+          String update =
+              "http://$ip:8081/api/v1/challenge/$user_id/update/steps";
+          var updateResponse = await http.patch(Uri.parse(update),
+              body: convert.jsonEncode(
+                  {"value": (challenge['challenges']['value'] + todaySteps)}));
+          setState(() {});
+          if (updateResponse.statusCode == 200) {
+            print("update challenge ok");
+          }
         }
+      } else {
+        print('save/update steps not ok');
       }
     }
 
     // Ensure we've loaded the updated count from the background isolate.
     await prefs?.reload();
 
-    setState(() {
-      print('boas');
-    });
+    setState(() {});
   }
 
   // The background
@@ -138,7 +128,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
       wakeup: true,
       allowWhileIdle: true,
       startAt: DateTime(DateTime.now().year, DateTime.now().month,
-          DateTime.now().day, 23, 55),
+          DateTime.now().day, 23, 00),
     );
   }
 
@@ -178,9 +168,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   void onStepCountError(error) {
     print('onStepCountError: $error');
-    setState(() {
-      _steps = 999999;
-    });
+    setState(() {});
   }
 
   Future<void> initPlatformState() async {
@@ -292,18 +280,44 @@ class _ClientHomePageState extends State<ClientHomePage> {
           decoration: BoxDecoration(
             gradient: bg_color,
           ),
-          child: FutureBuilder(
-              future: getChallenges(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) print(snapshot.error);
-                return snapshot.hasData
-                    ? GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
-                        itemBuilder: (context, index) {
-                          final challenge = challenges[index];
+          child: Column(
+            children: [
+              _challengesGridBuild(),
+              _runningButton(context),
+            ],
+          )),
+    );
+  }
 
-                          return challenge.description == 'water'
+  Expanded _challengesGridBuild() {
+    return Expanded(
+      flex: 8,
+      child: FutureBuilder(
+          future: getChallenges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+            return snapshot.hasData
+                ? GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      final challenge = challenges[index];
+
+                      return challenge.description == 'water'
+                          ? InkWell(
+                              child: challengeWidget(challenge),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => _showDialog(
+                                      'https://i.pinimg.com/originals/79/c7/ff/79c7ff9d622c8fae535a06898f0d6700.gif',
+                                      'Drink',
+                                      updateWater,
+                                      context),
+                                );
+                              },
+                            )
+                          : challenge.description == 'calories'
                               ? InkWell(
                                   child: challengeWidget(challenge),
                                   onTap: () {
@@ -311,36 +325,55 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                       context: context,
                                       builder: (BuildContext context) =>
                                           _showDialog(
-                                              'https://i.pinimg.com/originals/79/c7/ff/79c7ff9d622c8fae535a06898f0d6700.gif',
-                                              'Drink',
-                                              updateWater,
+                                              'https://c.tenor.com/H89rnWqDa04AAAAM/happy-birthday-food.gif',
+                                              'Eat!',
+                                              updateCals,
                                               context),
                                     );
                                   },
                                 )
-                              : challenge.description == 'calories'
-                                  ? InkWell(
-                                      child: challengeWidget(challenge),
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              _showDialog(
-                                                  'https://c.tenor.com/H89rnWqDa04AAAAM/happy-birthday-food.gif',
-                                                  'Eat!',
-                                                  updateCals,
-                                                  context),
-                                        );
-                                      },
-                                    )
-                                  : challengeWidget(challenge);
-                        },
-                        itemCount: challenges.length,
-                      )
-                    : Center(
-                        child:
-                            Text('Activate challenges so they show up here!'));
-              })),
+                              : challengeWidget(challenge);
+                    },
+                    itemCount: challenges.length,
+                  )
+                : Center(
+                    child: Text('Activate challenges so they show up here!'));
+          }),
+    );
+  }
+
+  Expanded _runningButton(BuildContext context) {
+    return Expanded(
+      flex: 2,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.transparent),
+          child: Center(
+            child: ElevatedButton(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => RunningPage()));
+                },
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    fixedSize: Size(75, 75)),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.redAccent,
+                  size: 45,
+                )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -362,7 +395,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
           Padding(
             padding: const EdgeInsets.only(left: 0.0),
             child: Text(
-              '${challenge.description}\n${challenge.value}/${challenge.goal}',
+              challenge.description == 'steps'
+                  ? '${challenge.description}\n${todaySteps}/${challenge.goal}'
+                  : '${challenge.description}\n${challenge.value}/${challenge.goal}',
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.black,
@@ -379,7 +414,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
             primary: Colors.white, backgroundColor: Colors.red),
-        child: new Text(
+        child: Text(
           text,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),

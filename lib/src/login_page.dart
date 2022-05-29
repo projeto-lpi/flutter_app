@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, non_constant_identifier_names, avoid_print
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/models/users.dart';
 import 'package:healthier_app/src/client/client_bottom_bar_page.dart';
 import 'package:healthier_app/src/signup_page.dart';
-import 'package:healthier_app/src/client/client_home_page.dart';
 import 'package:healthier_app/src/trainer/trainer_bottom_bar_page.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
@@ -21,10 +20,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  LinearGradient bg_color=constants.bg_color;
+  LinearGradient bg_color = constants.bg_color;
   Users user = Users(0, "", "", "", "");
   String ip = constants.IP;
-  String role="";
+  String role = "";
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -46,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       if (jsonResponse != null) {
         state = 1;
         var token = jsonResponse['token'];
-        role=jsonResponse['role'];
+        role = jsonResponse['role'];
         await storage.write(key: 'jwt', value: token);
       }
       print('login ok');
@@ -69,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
             width: double.infinity,
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
-                gradient: bg_color,
+              gradient: bg_color,
             ),
             child: Stack(
               children: [
@@ -113,25 +112,27 @@ class _LoginPageState extends State<LoginPage> {
                                   if (checkEmail(user.email) == true) {
                                     await attemptLogIn();
                                     if (state == 1) {
-                                      if(role=='CLIENT') {
+                                      if (role == 'CLIENT') {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => MyHomePage(),
                                           ),
                                         );
-                                      }else if(role=='NUTRITIONIST'){
+                                      } else if (role == 'NUTRITIONIST') {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => NutriMyHomePage(),
+                                            builder: (context) =>
+                                                NutriMyHomePage(),
                                           ),
                                         );
-                                      }else if(role=='TRAINER'){
+                                      } else if (role == 'TRAINER') {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => TrainerMyHomePage(),
+                                            builder: (context) =>
+                                                TrainerMyHomePage(),
                                           ),
                                         );
                                       }
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => SignupPage()));

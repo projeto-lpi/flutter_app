@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, prefer_const_constructors, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -25,7 +27,7 @@ class _ProfilePage extends State<ProfilePage> {
   late int user_id = 0;
   String ip = constants.IP;
   final picker = ImagePicker();
-  File? _image = null;
+  File? _image;
   bool button = false;
   String picture = "";
   late Uint8List imageBytes = base64Decode(picture);
@@ -112,7 +114,7 @@ class _ProfilePage extends State<ProfilePage> {
                   backgroundImage: _image == null
                       ? (picture != ""
                           ? MemoryImage(imageBytes) as ImageProvider
-                          : AssetImage('assets/images/foto.jpg'))
+                          : AssetImage('assets/images/default-user-image.png'))
                       : FileImage(File(_image!.path)),
                   radius: 50,
                 ),
@@ -174,7 +176,7 @@ class _ProfilePage extends State<ProfilePage> {
   }
 
   buildPicture() {
-    if (picture != "" || picture == null) {
+    if (picture != "") {
       String profileUrl = picture;
       profileUrl = profileUrl.substring(profileUrl.length);
       imageBytes = base64.decode(profileUrl);

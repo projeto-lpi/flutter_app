@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print, sized_box_for_whitespace
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
@@ -24,14 +26,13 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
   String ip = constants.IP;
 
   late Uint8List imgBytes;
-
   List<Nutritionists> nutris = [];
 
   List<Message> senderMessages = [];
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
   LinearGradient bg_color = constants.bg_color;
-  TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
 
   int flag = 1;
 
@@ -116,81 +117,13 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
 
   Widget drawBody() {
     if (nutri_id == 0) {
+      if (nutris.isEmpty) {
+        getNutris();
+      }
       if (nutris.isNotEmpty) {
-        return Container(
-          alignment: Alignment.center,
-          height: MediaQuery.of(context).size.height * 0.6,
-          width: MediaQuery.of(context).size.width,
-          child: PageView.builder(
-            physics: AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final nutri = nutris[index];
-              getNutriPicture(nutri.picture);
-              return Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 150,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: nutri.picture == ""
-                                  ? NetworkImage(
-                                          'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                      as ImageProvider
-                                  : MemoryImage(imgBytes) as ImageProvider),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Text(
-                        nutri.name,
-                        style: TextStyle(fontSize: 25.0, color: Colors.red),
-                      ),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Text(
-                        nutri.email,
-                        style: TextStyle(fontSize: 15.0, color: Colors.red),
-                      ),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          elevation: 5,
-                          primary: Colors.white,
-                        ),
-                        label: Text('Add Trainer'),
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) =>
-                                _showDialog(nutri, context),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-            itemCount: nutris.length,
-          ),
-        );
+        return _drawNutritionists();
       } else {
-        return Center(
+        return const Center(
           child: CircularProgressIndicator(),
         );
       }
@@ -205,154 +138,237 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
         flag = 0;
         getNutriPicture(nutri.picture);
       }
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.red,
-          flexibleSpace: SafeArea(
-            child: Container(
-              padding: EdgeInsets.only(right: 16),
-              child: Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 12,
-                  ),
-                  CircleAvatar(
-                      maxRadius: 20,
-                      backgroundImage: nutri.picture == ""
-                          ? NetworkImage(
-                                  'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                              as ImageProvider
-                          : MemoryImage(imgBytes) as ImageProvider),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          nutri.name,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          nutri.email,
-                          style: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.settings,
-                    color: Colors.black54,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 50.0),
-              child: ListView.builder(
-                itemCount: allMessages.length,
-                shrinkWrap: true,
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding:
-                        EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-                    child: Align(
-                      alignment: allMessages[index].from_id == user_id
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: (allMessages[index].from_id == user_id
-                                ? Colors.red[400]
-                                : Colors.grey.shade200)),
-                        child: Text(allMessages[index].content),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 0.0),
-                child: Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  height: 60,
-                  width: double.infinity,
-                  color: Colors.white,
-                  child: Row(
+      return _drawChat(nutri);
+    }
+  }
+
+  Scaffold _drawChat(Nutritionists nutri) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.red,
+        flexibleSpace: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              children: <Widget>[
+                const SizedBox(
+                  width: 12,
+                ),
+                CircleAvatar(
+                    maxRadius: 20,
+                    backgroundImage: nutri.picture == ""
+                        ? const NetworkImage(
+                                'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                            as ImageProvider
+                        : MemoryImage(imgBytes) as ImageProvider),
+                const SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.red[400],
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
+                      Text(
+                        nutri.name,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
-                        width: 15,
+                      const SizedBox(
+                        height: 2,
                       ),
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          decoration: InputDecoration(
-                              hintText: "Write message...",
-                              hintStyle: TextStyle(color: Colors.black54),
-                              border: InputBorder.none),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      FloatingActionButton(
-                        onPressed: () {
-                          sendMessage();
-                          flag = 1;
-                          _messageController.clear();
-                        },
-                        child: Icon(
-                          Icons.send,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        backgroundColor: Colors.red[400],
-                        elevation: 0,
+                      Text(
+                        nutri.email,
+                        style: TextStyle(
+                            color: Colors.grey.shade600, fontSize: 13),
                       ),
                     ],
                   ),
                 ),
+                const Icon(
+                  Icons.settings,
+                  color: Colors.black54,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 50.0),
+            child: ListView.builder(
+              itemCount: allMessages.length,
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return allMessages.isEmpty == true
+                    ? Center(
+                        child: Text('No messages available'),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, top: 5, bottom: 5),
+                        child: Align(
+                          alignment: allMessages[index].from_id == user_id
+                              ? Alignment.topRight
+                              : Alignment.topLeft,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: (allMessages[index].from_id == user_id
+                                    ? Colors.red[400]
+                                    : Colors.grey.shade200)),
+                            child: Text(allMessages[index].content),
+                          ),
+                        ),
+                      );
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 0.0),
+              child: Container(
+                padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                height: 60,
+                width: double.infinity,
+                color: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.red[400],
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                            hintText: "Write message...",
+                            hintStyle: TextStyle(color: Colors.black54),
+                            border: InputBorder.none),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    FloatingActionButton(
+                      onPressed: () {
+                        sendMessage();
+                        flag = 1;
+                        _messageController.clear();
+                      },
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      backgroundColor: Colors.red[400],
+                      elevation: 0,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _drawNutritionists() {
+    return Container(
+      alignment: Alignment.center,
+      height: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width,
+      child: PageView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final nutri = nutris[index];
+          getNutriPicture(nutri.picture);
+          return Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Card(
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(35)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 150,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: nutri.picture == ""
+                              ? const NetworkImage(
+                                      'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                  as ImageProvider
+                              : MemoryImage(imgBytes) as ImageProvider),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    nutri.name,
+                    style: const TextStyle(fontSize: 25.0, color: Colors.red),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    nutri.email,
+                    style: const TextStyle(fontSize: 15.0, color: Colors.red),
+                  ),
+                  const SizedBox(
+                    height: 30.0,
+                  ),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      elevation: 5,
+                      primary: Colors.white,
+                    ),
+                    label: const Text('Add Trainer'),
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            _showDialog(nutri, context),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: nutris.length,
+      ),
+    );
   }
 
   getNutriPicture(String picture) {
@@ -363,7 +379,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
             primary: Colors.white, backgroundColor: Colors.red),
-        child: new Text(
+        child: const Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -377,7 +393,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
         backgroundColor: Colors.white,
         primary: Colors.red,
       ),
-      child: Text(
+      child: const Text(
         "No",
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
@@ -387,11 +403,12 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     );
 
     return AlertDialog(
-      title: Text(
-        "Add Trainer",
+      title: const Text(
+        "Add Nutritionist",
         textAlign: TextAlign.center,
       ),
-      content: Text("Are you sure that you want to add this trainer?",
+      content: const Text(
+          "Are you sure that you want to add this nutritionist?",
           textAlign: TextAlign.center),
       actions: <Widget>[
         Row(
@@ -408,18 +425,21 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     var response2 = await http.patch(Uri.parse(url2));
     if (response2.statusCode == 200) {
       print("add nutri ok");
+      setState(() {
+        nutri_id = id;
+      });
     }
   }
 
   Widget appBarText() {
     getData();
     if (nutri_id != 0) {
-      return Text(
+      return const Text(
         'Chat',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
       );
     }
-    return Text(
+    return const Text(
       'Select a Nutritionist',
       style: TextStyle(fontWeight: FontWeight.w600),
     );

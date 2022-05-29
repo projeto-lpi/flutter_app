@@ -1,15 +1,14 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, body_might_complete_normally_nullable
 
 import 'dart:convert';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:healthier_app/src/login_page.dart';
 import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
-import 'package:cool_alert/cool_alert.dart';
-import 'package:healthier_app/src/login_page.dart';
-import 'package:pedometer/pedometer.dart';
-import './utils/constants.dart' as constants;
 
+import './utils/constants.dart' as constants;
 import '../main.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -18,17 +17,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPage extends State<SettingsPage> {
-  TextEditingController _newPasswordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   String password = "";
   String ip = constants.IP;
 
   @override
   void dispose() {
+    super.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
-    super.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   @override
@@ -70,7 +71,7 @@ class _SettingsPage extends State<SettingsPage> {
             Column(
               children: [
                 Row(
-                  children: [
+                  children: const [
                     Icon(
                       Icons.person,
                       color: Colors.red,
@@ -100,7 +101,7 @@ class _SettingsPage extends State<SettingsPage> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("Já estás Candido"),
+                            title: Text("Update Password"),
                             content: Column(
                               children: [
                                 TextFormField(
@@ -205,6 +206,7 @@ class _SettingsPage extends State<SettingsPage> {
                             ),
                             TextButton(
                               onPressed: () {
+                                storage.deleteAll();
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) => LoginPage()),

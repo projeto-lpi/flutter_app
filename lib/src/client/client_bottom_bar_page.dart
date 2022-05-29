@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/client/nutri_page.dart';
 import 'package:healthier_app/src/client/training_page.dart';
@@ -43,8 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildBottomBar() {
     return CustomAnimatedBottomBar(
       containerHeight: 70,
-      backgroundColor: Colors.white,
       selectedIndex: _currentIndex,
+      backgroundColor: Colors.white,
       showElevation: true,
       itemCornerRadius: 24,
       curve: Curves.easeIn,
