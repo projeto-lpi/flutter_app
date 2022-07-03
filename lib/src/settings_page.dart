@@ -39,14 +39,14 @@ class _SettingsPage extends State<SettingsPage> {
       extendBody: true,
       appBar: AppBar(
         elevation: 1,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: constants.bgColor,
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.red,
+            color: constants.buttonColor,
           ),
         ),
       ),
@@ -74,7 +74,7 @@ class _SettingsPage extends State<SettingsPage> {
                   children: const [
                     Icon(
                       Icons.person,
-                      color: Colors.red,
+                      color: constants.buttonColor,
                     ),
                     SizedBox(
                       width: 8,
@@ -137,8 +137,8 @@ class _SettingsPage extends State<SettingsPage> {
                             ),
                             actions: [
                               TextButton(
-                                style:
-                                    TextButton.styleFrom(primary: Colors.red),
+                                style: TextButton.styleFrom(
+                                    primary: constants.bgColor),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -147,7 +147,7 @@ class _SettingsPage extends State<SettingsPage> {
                               TextButton(
                                 style: TextButton.styleFrom(
                                     primary: Colors.white,
-                                    backgroundColor: Colors.red),
+                                    backgroundColor: constants.bgColor),
                                 onPressed: () {
                                   updatePassword();
                                   Navigator.of(context).pop();
@@ -223,7 +223,7 @@ class _SettingsPage extends State<SettingsPage> {
                   style: TextStyle(
                     fontSize: 16,
                     letterSpacing: 2.2,
-                    color: Colors.black,
+                    color: constants.buttonColor,
                   ),
                 ),
               ),

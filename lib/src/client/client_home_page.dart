@@ -39,16 +39,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
   late String name = "";
   int num = 0;
 
-  double goalSteps = 6000;
-  double caloriesCurrent = 635;
-  double caloriesGoal = 1400;
-  Map<String, double> stepsMap = {};
-  Map<String, double> caloriesMap = {};
-
   Box<int> stepsBox = Hive.box('steps');
   List<Challenge> challenges = [];
-  double water = 0.0;
-  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -56,17 +48,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
     getUsername();
     getChallenges();
-
+    _saveSteps();
     initPlatformState();
-
-    // Register for events from the background isolate. These messages will
-    // always coincide with an alarm firing.
-    port.listen((_) async => await _incrementCounter());
   }
 
-  Future<void> _incrementCounter() async {
-    developer.log('Increment counter!');
-
+  Future<void> callback() async {
     String url = "http://$ip:8081/api/v1/steps/saveSteps/$user_id";
     var response = await http.post(Uri.parse(url),
         body: convert.jsonEncode({
@@ -98,23 +84,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
         print('save/update steps not ok');
       }
     }
-
-    // Ensure we've loaded the updated count from the background isolate.
-    await prefs?.reload();
-
     setState(() {});
-  }
-
-  // The background
-  static SendPort? uiSendPort;
-
-  // The callback for our alarm
-  static Future<void> callback() async {
-    developer.log('Alarm fired!');
-
-    // This will be null if we're running in the background.
-    uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
-    uiSendPort?.send(null);
   }
 
   _saveSteps() async {
@@ -278,7 +248,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            gradient: bg_color,
+            color: constants.bgColor,
           ),
           child: Column(
             children: [
@@ -361,14 +331,13 @@ class _ClientHomePageState extends State<ClientHomePage> {
                       MaterialPageRoute(builder: (context) => RunningPage()));
                 },
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
+                    primary: constants.buttonColor,
                     elevation: 10,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50)),
                     fixedSize: Size(75, 75)),
                 child: Icon(
                   Icons.play_arrow_rounded,
-                  color: Colors.redAccent,
                   size: 45,
                 )),
           ),
@@ -382,13 +351,14 @@ class _ClientHomePageState extends State<ClientHomePage> {
       margin: EdgeInsets.only(top: 65, left: 35, right: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       elevation: 10,
+      color: constants.buttonColor,
       child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 15.0),
             child: Icon(
               Icons.emoji_events_rounded,
-              color: Colors.yellow,
+              color: constants.bgColor,
               size: 40,
             ),
           ),
@@ -399,10 +369,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   ? '${challenge.description}\n${todaySteps}/${challenge.goal}'
                   : '${challenge.description}\n${challenge.value}/${challenge.goal}',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           )
         ],
@@ -413,7 +380,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget _showDialog(gif, text, func, context) {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
-            primary: Colors.white, backgroundColor: Colors.red),
+            primary: Colors.white, backgroundColor: constants.bgColor),
         child: Text(
           text,
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -428,7 +395,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     Widget noButton = TextButton(
       style: TextButton.styleFrom(
         backgroundColor: Colors.white,
-        primary: Colors.red,
+        primary: constants.bgColor,
       ),
       child: Text(
         "Cancel",
@@ -465,7 +432,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5), color: Colors.red),
+                    borderRadius: BorderRadius.circular(5),
+                    color: constants.bgColor),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment
                       .center, //Center Column contents vertically,
@@ -483,18 +451,17 @@ class _ClientHomePageState extends State<ClientHomePage> {
                         },
                         child: Icon(
                           Icons.remove,
-                          color: Colors.white,
                           size: 16,
                         )),
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 3),
                       padding: EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          color: Colors.white),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
                       child: Text(
                         num.toString(),
-                        style: TextStyle(color: Colors.black, fontSize: 16),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                     InkWell(
@@ -505,7 +472,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
                         },
                         child: Icon(
                           Icons.add,
-                          color: Colors.white,
                           size: 16,
                         )),
                   ],

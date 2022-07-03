@@ -16,7 +16,6 @@ class NutriHomePage extends StatefulWidget {
 class _NutriHomePageState extends State<NutriHomePage> {
   late String name = "";
   String ip = constants.IP;
-  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -64,7 +63,7 @@ class _NutriHomePageState extends State<NutriHomePage> {
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: Text('hello'),
       ),

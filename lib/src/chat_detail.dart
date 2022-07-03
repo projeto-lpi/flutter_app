@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, prefer_const_constructors, avoid_print
 
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -34,7 +35,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
   String ip = constants.IP;
-  LinearGradient bg_color = constants.bg_color;
   final TextEditingController _messageController = TextEditingController();
 
   int flag = 1;
@@ -49,15 +49,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   getTrainerPicture(String picture) {
-    setState(() {
-      imgBytes = base64Decode(picture);
-    });
+    imgBytes = base64Decode(picture);
   }
 
   @override
   void initState() {
     super.initState();
     getMessages();
+    getTrainerPicture(widget.client_picture);
   }
 
   @override
@@ -83,7 +82,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: drawBody(),
       ),
@@ -135,7 +134,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       flag = 0;
     }
 
-    getTrainerPicture(widget.client_picture);
     return FutureBuilder(
         future: getMessages(),
         builder: (context, snapshot) {
@@ -145,7 +143,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   appBar: AppBar(
                     elevation: 0,
                     automaticallyImplyLeading: false,
-                    backgroundColor: Colors.red,
+                    backgroundColor: constants.buttonColor,
                     flexibleSpace: SafeArea(
                       child: Container(
                         padding: EdgeInsets.only(right: 16),
@@ -206,20 +204,22 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             return Container(
                               padding: EdgeInsets.only(
                                   left: 16, right: 16, top: 5, bottom: 5),
-                              child: Align(
+                              child: Bubble(
+                                margin: BubbleEdges.only(top: 10),
                                 alignment: allMessages[index].from_id ==
                                         widget.worker_id
                                     ? Alignment.topRight
                                     : Alignment.topLeft,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: (allMessages[index].from_id ==
-                                              widget.client_id
-                                          ? Colors.grey.shade200
-                                          : Colors.red[400])),
-                                  child: Text(allMessages[index].content),
-                                ),
+                                nip: allMessages[index].from_id ==
+                                        widget.worker_id
+                                    ? BubbleNip.rightCenter
+                                    : BubbleNip.leftCenter,
+                                color: (allMessages[index].from_id ==
+                                        widget.worker_id
+                                    ? constants.buttonColor
+                                    : Colors.grey.shade900),
+                                child: Text(allMessages[index].content,
+                                    textAlign: TextAlign.center),
                               ),
                             );
                           },
@@ -243,7 +243,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                     height: 30,
                                     width: 30,
                                     decoration: BoxDecoration(
-                                      color: Colors.red[400],
+                                      color: constants.buttonColor,
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                     child: Icon(
@@ -259,11 +259,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                 Expanded(
                                   child: TextField(
                                     controller: _messageController,
+                                    keyboardType: TextInputType.multiline,
                                     decoration: InputDecoration(
                                         hintText: "Write message...",
                                         hintStyle:
                                             TextStyle(color: Colors.black54),
                                         border: InputBorder.none),
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                 ),
                                 SizedBox(
@@ -280,7 +282,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  backgroundColor: Colors.red[400],
+                                  backgroundColor: constants.buttonColor,
                                   elevation: 0,
                                 ),
                               ],
@@ -295,7 +297,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   appBar: AppBar(
                     elevation: 0,
                     automaticallyImplyLeading: false,
-                    backgroundColor: Colors.red,
+                    backgroundColor: constants.buttonColor,
                     flexibleSpace: SafeArea(
                       child: Container(
                         padding: EdgeInsets.only(right: 16),
@@ -348,7 +350,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       Padding(
                           padding: const EdgeInsets.only(bottom: 50.0),
                           child: Center(
-                            child: Text('No messages available'),
+                            child: Text(
+                              'No messages available',
+                              style: TextStyle(color: constants.bgColor),
+                            ),
                           )),
                       Align(
                         alignment: Alignment.bottomLeft,
@@ -368,7 +373,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                     height: 30,
                                     width: 30,
                                     decoration: BoxDecoration(
-                                      color: Colors.red[400],
+                                      color: constants.buttonColor,
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                     child: Icon(
@@ -389,6 +394,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                         hintStyle:
                                             TextStyle(color: Colors.black54),
                                         border: InputBorder.none),
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                 ),
                                 SizedBox(
@@ -405,7 +411,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  backgroundColor: Colors.red[400],
+                                  backgroundColor: constants.buttonColor,
                                   elevation: 0,
                                 ),
                               ],

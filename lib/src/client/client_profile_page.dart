@@ -34,7 +34,6 @@ class _ProfilePage extends State<ClientProfilePage> {
   late Uint8List imageBytes = base64Decode(picture);
   List<Steps> steps = [];
   int flag = 1;
-  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -118,7 +117,7 @@ class _ProfilePage extends State<ClientProfilePage> {
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: SafeArea(
           child: Column(
@@ -157,7 +156,6 @@ class _ProfilePage extends State<ClientProfilePage> {
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -170,6 +168,7 @@ class _ProfilePage extends State<ClientProfilePage> {
                     const EdgeInsets.only(right: 18.0, left: 18, bottom: 18),
                 child: SfCartesianChart(
                     title: ChartTitle(
+                        borderColor: constants.buttonColor,
                         text: 'Steps',
                         textStyle: const TextStyle(
                             color: Colors.white,
@@ -187,7 +186,7 @@ class _ProfilePage extends State<ClientProfilePage> {
                               '${formatDate(data.date).day - 1}/${formatDate(data.date).month}',
                           yValueMapper: (Steps data, _) => data.stepCount,
                           name: 'Gold',
-                          color: Colors.white,
+                          color: constants.buttonColor,
                           borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(5),
                               topLeft: Radius.circular(5)))

@@ -10,6 +10,7 @@ import 'package:healthier_app/src/utils/jwt.dart';
 import 'package:http/http.dart' as http;
 import '../../main.dart';
 import '../utils/constants.dart' as constants;
+import 'package:bubble/bubble.dart';
 
 class ClientTrainingPage extends StatefulWidget {
   const ClientTrainingPage({Key? key}) : super(key: key);
@@ -32,7 +33,6 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   List<Message> senderMessages = [];
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
-  LinearGradient bg_color = constants.bg_color;
   final TextEditingController _messageController = TextEditingController();
 
   int flag = 1;
@@ -69,7 +69,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: constants.buttonColor,
         title: appBarText(),
         centerTitle: true,
       ),
@@ -78,7 +78,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: drawBody(),
       ),
@@ -144,7 +144,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.red,
+        backgroundColor: constants.buttonColor,
         flexibleSpace: SafeArea(
           child: Container(
             padding: EdgeInsets.only(right: 16),
@@ -209,18 +209,19 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                     : Container(
                         padding: EdgeInsets.only(
                             left: 16, right: 16, top: 5, bottom: 5),
-                        child: Align(
+                        child: Bubble(
+                          margin: BubbleEdges.only(top: 10),
                           alignment: allMessages[index].from_id == user_id
                               ? Alignment.topRight
                               : Alignment.topLeft,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: (allMessages[index].from_id == user_id
-                                    ? Colors.red[400]
-                                    : Colors.grey.shade200)),
-                            child: Text(allMessages[index].content),
-                          ),
+                          nip: allMessages[index].from_id == user_id
+                              ? BubbleNip.rightCenter
+                              : BubbleNip.leftCenter,
+                          color: (allMessages[index].from_id == user_id
+                              ? constants.buttonColor
+                              : Colors.grey.shade900),
+                          child: Text(allMessages[index].content,
+                              textAlign: TextAlign.center),
                         ),
                       );
               },
@@ -243,7 +244,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                         height: 30,
                         width: 30,
                         decoration: BoxDecoration(
-                          color: Colors.red[400],
+                          color: constants.buttonColor,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Icon(
@@ -280,7 +281,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                         color: Colors.white,
                         size: 18,
                       ),
-                      backgroundColor: Colors.red[400],
+                      backgroundColor: constants.buttonColor,
                       elevation: 0,
                     ),
                   ],

@@ -33,7 +33,6 @@ class _ProfilePage extends State<ProfilePage> {
   late Uint8List imageBytes = base64Decode(picture);
   List<Steps> steps = [];
   int flag = 1;
-  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -104,7 +103,7 @@ class _ProfilePage extends State<ProfilePage> {
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: SafeArea(
           child: Column(

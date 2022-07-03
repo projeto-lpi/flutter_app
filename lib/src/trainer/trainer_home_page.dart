@@ -16,7 +16,6 @@ class TrainerHomePage extends StatefulWidget {
 class _TrainerHomePageState extends State<TrainerHomePage> {
   late String name = "";
   String ip = constants.IP;
-  LinearGradient bg_color = constants.bg_color;
 
   @override
   void initState() {
@@ -63,7 +62,7 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
         alignment: Alignment.center,
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(gradient: bg_color),
+        decoration: BoxDecoration(color: constants.bgColor),
         child: Text('hello'),
       ),
     );

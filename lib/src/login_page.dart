@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, non_constant_identifier_names, avoid_print
 
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/models/users.dart';
 import 'package:healthier_app/src/client/client_bottom_bar_page.dart';
@@ -20,18 +21,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  LinearGradient bg_color = constants.bg_color;
   Users user = Users(0, "", "", "", "");
   String ip = constants.IP;
   String role = "";
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  bool isHidden = true;
   int state = 0;
 
   @override
   void initState() {
     super.initState();
+    isHidden = true;
   }
 
   Future attemptLogIn() async {
@@ -61,137 +62,103 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              gradient: bg_color,
-            ),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 100.0),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage('assets/images/logo.jpg'),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Form(
-                        key: _formKey,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(20),
-                            ),
-                            color: Colors.white,
-                          ),
-                          width: 300,
-                          height: 350,
-                          child: Column(children: [
-                            SizedBox(
-                              height: 40,
-                            ),
-                            drawFormField(
-                                'Email', _emailController, Icons.email),
-                            drawFormField('Password', _passwordController,
-                                Icons.password),
-                            SizedBox(height: 40),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  user.email = _emailController.text;
-                                  user.password = _passwordController.text;
-                                  if (checkEmail(user.email) == true) {
-                                    await attemptLogIn();
-                                    if (state == 1) {
-                                      if (role == 'CLIENT') {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => MyHomePage(),
-                                          ),
-                                        );
-                                      } else if (role == 'NUTRITIONIST') {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                NutriMyHomePage(),
-                                          ),
-                                        );
-                                      } else if (role == 'TRAINER') {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                TrainerMyHomePage(),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Login'.toUpperCase(),
-                                ),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pushReplacement(
+      body: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 100.0),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 100,
+                    backgroundImage: AssetImage('assets/images/logo.jpg'),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Column(children: [
+                      _EmailInput(),
+                      _PasswordInput(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            user.email = _emailController.text;
+                            user.password = _passwordController.text;
+                            if (checkEmail(user.email) == true) {
+                              await attemptLogIn();
+                              if (state == 1) {
+                                if (role == 'CLIENT') {
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SignupPage()));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: Text(
-                                'Sign Up'.toUpperCase(),
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                InkWell(
-                                  onTap: () {},
-                                  child: Text(
-                                    'Forgot Password?',
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                )
-                              ],
-                            )
-                          ]),
+                                      builder: (context) => MyHomePage(),
+                                    ),
+                                  );
+                                } else if (role == 'NUTRITIONIST') {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NutriMyHomePage(),
+                                    ),
+                                  );
+                                } else if (role == 'TRAINER') {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TrainerMyHomePage(),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(200, 40),
+                              primary: constants.buttonColor),
+                          child: Text(
+                            'Login'.toUpperCase(),
+                          ),
                         ),
                       ),
-                    ],
+                      _SignupButton(context),
+                    ]),
                   ),
-                )
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Column _SignupButton(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'Don\'t have an account?\nSign up here!',
+          style: TextStyle(fontSize: 11),
+          textAlign: TextAlign.center,
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => SignupPage()));
+          },
+          style: ElevatedButton.styleFrom(
+              fixedSize: const Size(200, 40),
+              primary: Color.fromRGBO(233, 196, 106, 1)),
+          child: Text(
+            'Sign Up'.toUpperCase(),
+          ),
+        ),
+      ],
     );
   }
 
@@ -201,73 +168,56 @@ class _LoginPageState extends State<LoginPage> {
     return emailRgx.hasMatch(string);
   }
 
-  Widget drawFormField(
-      String text, TextEditingController controller, IconData _icon) {
-    return Container(
-      width: MediaQuery.of(context).size.width * .63,
-      height: /* _validate_password ? 55 :*/ 35,
-      margin: EdgeInsets.only(top: 15),
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 50,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-        color: Colors.white,
-      ),
-      child: Row(
-        children: [
-          Icon(
-            _icon,
-            color: Colors.red,
+  Widget _PasswordInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.text,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _passwordController,
+        obscureText: isHidden,
+        decoration: InputDecoration(
+          errorText: (_passwordController.text == null ||
+                  _passwordController.text.isEmpty)
+              ? 'Invalid password'
+              : '',
+          labelText: 'Password',
+          prefixIcon: Icon(
+            Icons.password,
           ),
-          SizedBox(
-            width: 10,
-          ),
-          Flexible(
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                if (text == 'Email') {
-                  if (checkEmail(value) == false) {
-                    return 'Invalid email';
-                  }
-                }
-                return null;
-              },
-              controller: controller,
-              obscureText: text == 'Password' ? true : false,
-              decoration: InputDecoration(
-                /*  hintText:
-                                          _validate_password ? null : 'Password',
-                                      errorText: _validate_password
-                                          ? validatePassword(_passwordController.text)
-                                          : null,*/
-                hintText: text,
-                border: UnderlineInputBorder(),
-              ),
-            ),
-          ),
-        ],
+          border: OutlineInputBorder(),
+        ),
       ),
     );
   }
 
-  Widget drawButton(String text) {
-    return Container(
-      width: MediaQuery.of(context).size.width * .3,
-      height: MediaQuery.of(context).size.height * .05,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(25)),
-        color: Colors.red,
+  Widget _EmailInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+          return (checkEmail(value) == false ? 'Invalid email' : null);
+        },
+        controller: _emailController,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.alternate_email,
+          ),
+          errorText: (checkEmail(_emailController.text) == false
+              ? 'Invalid email'
+              : ''),
+          labelText: 'Email',
+          border: OutlineInputBorder(),
+        ),
       ),
-      child: Center(
-          child: Text(
-        text.toUpperCase(),
-        style: TextStyle(color: Colors.white),
-      )),
     );
   }
 }

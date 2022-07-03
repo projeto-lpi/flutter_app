@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -31,7 +32,6 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
   List<Message> senderMessages = [];
   List<Message> receiverMessages = [];
   List<Message> allMessages = [];
-  LinearGradient bg_color = constants.bg_color;
   final TextEditingController _messageController = TextEditingController();
 
   int flag = 1;
@@ -70,7 +70,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: bg_color,
+          color: constants.bgColor,
         ),
         child: drawBody(),
       ),
@@ -147,7 +147,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.red,
+        backgroundColor: constants.buttonColor,
         flexibleSpace: SafeArea(
           child: Container(
             padding: const EdgeInsets.only(right: 16),
@@ -208,23 +208,27 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
               itemBuilder: (context, index) {
                 return allMessages.isEmpty == true
                     ? Center(
-                        child: Text('No messages available'),
+                        child: Text(
+                          'No messages available',
+                          style: TextStyle(color: constants.bgColor),
+                        ),
                       )
                     : Container(
                         padding: const EdgeInsets.only(
                             left: 16, right: 16, top: 5, bottom: 5),
-                        child: Align(
+                        child: Bubble(
+                          margin: BubbleEdges.only(top: 10),
                           alignment: allMessages[index].from_id == user_id
                               ? Alignment.topRight
                               : Alignment.topLeft,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: (allMessages[index].from_id == user_id
-                                    ? Colors.red[400]
-                                    : Colors.grey.shade200)),
-                            child: Text(allMessages[index].content),
-                          ),
+                          nip: allMessages[index].from_id == user_id
+                              ? BubbleNip.rightCenter
+                              : BubbleNip.leftCenter,
+                          color: (allMessages[index].from_id == user_id
+                              ? constants.buttonColor
+                              : Colors.grey.shade900),
+                          child: Text(allMessages[index].content,
+                              textAlign: TextAlign.center),
                         ),
                       );
               },
@@ -247,7 +251,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                         height: 30,
                         width: 30,
                         decoration: BoxDecoration(
-                          color: Colors.red[400],
+                          color: constants.buttonColor,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: const Icon(
@@ -267,6 +271,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                             hintText: "Write message...",
                             hintStyle: TextStyle(color: Colors.black54),
                             border: InputBorder.none),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                     const SizedBox(
@@ -283,7 +288,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
                         color: Colors.white,
                         size: 18,
                       ),
-                      backgroundColor: Colors.red[400],
+                      backgroundColor: constants.buttonColor,
                       elevation: 0,
                     ),
                   ],

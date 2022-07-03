@@ -31,7 +31,6 @@ class _SignupPageState extends State<SignupPage> {
   bool genderSwitch = false;
   String gender = "";
   String ip = constants.IP;
-  LinearGradient bg_color = constants.bg_color;
   int flag = 0;
 
   bool _validate_email = false;
@@ -61,7 +60,7 @@ class _SignupPageState extends State<SignupPage> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
-                gradient: bg_color,
+                color: constants.bgColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: 100.0),

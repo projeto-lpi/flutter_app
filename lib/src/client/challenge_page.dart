@@ -119,7 +119,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            gradient: bg_color,
+            color: bgColor,
           ),
           child: SafeArea(
             child: Column(
@@ -157,9 +157,12 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
                               return InkWell(
                                 child: CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: Text(challenge.description,
-                                      textAlign: TextAlign.center),
+                                  backgroundColor: buttonColor,
+                                  child: Text(
+                                    challenge.description,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: textColor),
+                                  ),
                                   radius: 20,
                                 ),
                                 onTap: () {
@@ -211,10 +214,12 @@ class _ChallengesPageState extends State<ChallengesPage> {
                               final challenge = activeChallenges[index];
                               return InkWell(
                                 child: CircleAvatar(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: bottomBarColor,
                                   child: Text(
-                                      '${challenge.description}\n${((challenge.value / challenge.goal) * 100).toStringAsFixed(2)}%',
-                                      textAlign: TextAlign.center),
+                                    '${challenge.description}\n${((challenge.value / challenge.goal) * 100).toStringAsFixed(2)}%',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: textColor),
+                                  ),
                                   radius: 20,
                                 ),
                                 onTap: () {},
@@ -262,7 +267,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
                               return InkWell(
                                 child: CircleAvatar(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: iconColor,
                                   child: Text(
                                     '${challenge.description}\nCompleted',
                                     textAlign: TextAlign.center,
@@ -290,7 +295,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
   Widget _showDialog(Challenge item, context) {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
-            primary: Colors.white, backgroundColor: Colors.red),
+            primary: Colors.white, backgroundColor: bgColor),
         child: const Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -307,21 +312,22 @@ class _ChallengesPageState extends State<ChallengesPage> {
     Widget noButton = TextButton(
       style: TextButton.styleFrom(
         backgroundColor: Colors.white,
-        primary: Colors.red,
+        primary: bgColor,
       ),
       child: Text(
         "No",
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.pop(context);
       },
     );
 
     return AlertDialog(
       title: Text(
-        "Start Challenge",
+        "Start ${item.description} Challenge",
         textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.black),
       ),
       content: TextFormField(
           controller: _goalController,

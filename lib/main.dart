@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:healthier_app/src/client/client_home_page.dart';
+import 'package:healthier_app/src/utils/constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,12 +47,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context)
+        .textTheme
+        .apply(bodyColor: textColor, displayColor: textColor);
+
     return MaterialApp(
       title: 'Healthier App',
       theme: ThemeData(
-          fontFamily: "Cairo",
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          backgroundColor: Colors.grey),
+        fontFamily: "Cairo",
+        canvasColor: bgColor,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        textTheme: textTheme,
+        iconTheme: IconThemeData(color: iconColor),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: buttonColor,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
     );

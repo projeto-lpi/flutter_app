@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/client/nutri_page.dart';
 import 'package:healthier_app/src/client/training_page.dart';
+import 'package:healthier_app/src/utils/constants.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
 import 'challenge_page.dart';
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return CustomAnimatedBottomBar(
       containerHeight: 70,
       selectedIndex: _currentIndex,
-      backgroundColor: Colors.white,
+      backgroundColor: textColor,
       showElevation: true,
       itemCornerRadius: 24,
       curve: Curves.easeIn,
@@ -55,35 +56,35 @@ class _MyHomePageState extends State<MyHomePage> {
         BottomNavyBarItem(
           icon: Icon(Icons.home_rounded),
           title: Text('Home'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.directions_run_rounded),
           title: Text('Training'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.fastfood_rounded),
           title: Text('Nutritionist '),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.emoji_events_rounded),
           title: Text('Challenges'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.person),
           title: Text('Profile'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
