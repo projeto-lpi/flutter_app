@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         ElevatedButton(
           onPressed: () async {
-            Navigator.pushReplacement(
+            Navigator.push(
                 context, MaterialPageRoute(builder: (context) => SignupPage()));
           },
           style: ElevatedButton.styleFrom(
@@ -188,6 +188,7 @@ class _LoginPageState extends State<LoginPage> {
           labelText: 'Password',
           prefixIcon: Icon(
             Icons.password,
+            color: constants.buttonColor,
           ),
           border: OutlineInputBorder(),
         ),
@@ -210,6 +211,7 @@ class _LoginPageState extends State<LoginPage> {
         decoration: InputDecoration(
           prefixIcon: Icon(
             Icons.alternate_email,
+            color: constants.buttonColor,
           ),
           errorText: (checkEmail(_emailController.text) == false
               ? 'Invalid email'

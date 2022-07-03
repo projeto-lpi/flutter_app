@@ -119,7 +119,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
       } else {
         return Center(
           child: CircularProgressIndicator(
-            color: Colors.white,
+            color: constants.buttonColor,
           ),
         );
       }
@@ -264,6 +264,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
                             hintText: "Write message...",
                             hintStyle: TextStyle(color: Colors.black54),
                             border: InputBorder.none),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                     SizedBox(
@@ -294,77 +295,82 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     );
   }
 
-  Container drawTrainers() {
-    return Container(
-      alignment: Alignment.center,
-      height: MediaQuery.of(context).size.height * 0.6,
-      width: MediaQuery.of(context).size.width,
-      child: PageView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          final trainer = trainers[index];
-          getTrainerPicture(trainer.picture);
-          return Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(35)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 150,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 30.0),
-                      child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: trainer.picture == ""
-                              ? NetworkImage(
-                                      'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                  as ImageProvider
-                              : MemoryImage(imgBytes) as ImageProvider),
+  Padding drawTrainers() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 100.0),
+      child: Container(
+        alignment: Alignment.center,
+        height: MediaQuery.of(context).size.height * 0.6,
+        width: MediaQuery.of(context).size.width,
+        child: PageView.builder(
+          physics: AlwaysScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final trainer = trainers[index];
+            getTrainerPicture(trainer.picture);
+            return Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Card(
+                color: constants.buttonColor,
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 150,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30.0),
+                        child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: trainer.picture == ""
+                                ? NetworkImage(
+                                        'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                    as ImageProvider
+                                : MemoryImage(imgBytes) as ImageProvider),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    trainer.name,
-                    style: TextStyle(fontSize: 25.0, color: Colors.red),
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    trainer.email,
-                    style: TextStyle(fontSize: 15.0, color: Colors.red),
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      elevation: 5,
-                      primary: Colors.white,
+                    SizedBox(
+                      height: 5.0,
                     ),
-                    label: Text('Add Trainer'),
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _showDialog(trainer, context),
-                      );
-                    },
-                  )
-                ],
+                    Text(
+                      trainer.name,
+                      style: TextStyle(
+                        fontSize: 25.0,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      trainer.email,
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(200, 40),
+                        primary: constants.bgColor,
+                      ),
+                      label: Text('Add Trainer'),
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _showDialog(trainer, context),
+                        );
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-        itemCount: trainers.length,
+            );
+          },
+          itemCount: trainers.length,
+        ),
       ),
     );
   }
@@ -376,7 +382,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
   Widget _showDialog(Trainer item, context) {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
-            primary: Colors.white, backgroundColor: Colors.red),
+            primary: Colors.white, backgroundColor: constants.bgColor),
         child: new Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -390,7 +396,7 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     Widget noButton = TextButton(
       style: TextButton.styleFrom(
         backgroundColor: Colors.white,
-        primary: Colors.red,
+        primary: constants.bgColor,
       ),
       child: Text(
         "No",
@@ -404,10 +410,11 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
     return AlertDialog(
       title: Text(
         "Add Trainer",
+        style: TextStyle(color: Colors.black),
         textAlign: TextAlign.center,
       ),
       content: Text("Are you sure that you want to add this trainer?",
-          textAlign: TextAlign.center),
+          style: TextStyle(color: Colors.black), textAlign: TextAlign.center),
       actions: <Widget>[
         Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -440,6 +447,9 @@ class _ClientTrainingPageState extends State<ClientTrainingPage> {
           "content": _messageController.text
         }));
     if (response.statusCode == 200) {
+      setState(() {
+        getMessages();
+      });
       print("send message ok");
     }
   }

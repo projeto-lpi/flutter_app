@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthier_app/src/nutri/chat_page.dart';
 import 'package:healthier_app/src/profile_page.dart';
+import 'package:healthier_app/src/utils/constants.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
 import 'nutri_home_page.dart';
@@ -40,6 +41,7 @@ class _NutriMyHomePageState extends State<NutriMyHomePage> {
 
   Widget _buildBottomBar() {
     return CustomAnimatedBottomBar(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       containerHeight: 70,
       backgroundColor: Colors.white,
       selectedIndex: _currentIndex,
@@ -51,14 +53,14 @@ class _NutriMyHomePageState extends State<NutriMyHomePage> {
         BottomNavyBarItem(
           icon: Icon(Icons.fastfood_rounded),
           title: Text('Nutritionist '),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.person),
           title: Text('Profile'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),

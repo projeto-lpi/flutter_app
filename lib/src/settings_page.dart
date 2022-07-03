@@ -195,10 +195,18 @@ class _SettingsPage extends State<SettingsPage> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Sign Out"),
-                          content: Text("Are you sure you want to Sign Out?"),
+                          title: Text(
+                            "Sign Out",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          content: Text(
+                            "Are you sure you want to Sign Out?",
+                            style: TextStyle(color: Colors.black),
+                          ),
                           actions: [
-                            TextButton(
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: constants.bgColor),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -212,7 +220,10 @@ class _SettingsPage extends State<SettingsPage> {
                                         builder: (context) => LoginPage()),
                                     (Route<dynamic> route) => false);
                               },
-                              child: Text("Continue"),
+                              child: Text(
+                                "Continue",
+                                style: TextStyle(color: constants.bgColor),
+                              ),
                             )
                           ],
                         );

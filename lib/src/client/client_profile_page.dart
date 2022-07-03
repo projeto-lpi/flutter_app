@@ -79,7 +79,7 @@ class _ProfilePage extends State<ClientProfilePage> {
             ? <Widget>[
                 IconButton(
                   icon: const Icon(Icons.check_outlined),
-                  color: Colors.white,
+                  color: constants.buttonColor,
                   tooltip: 'Save changes',
                   onPressed: () async {
                     List<int> imgBytes = await _image!.readAsBytes();
@@ -91,7 +91,8 @@ class _ProfilePage extends State<ClientProfilePage> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white),
+                  icon:
+                      const Icon(Icons.settings, color: constants.buttonColor),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -102,7 +103,8 @@ class _ProfilePage extends State<ClientProfilePage> {
               ]
             : <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white),
+                  icon:
+                      const Icon(Icons.settings, color: constants.buttonColor),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -130,14 +132,14 @@ class _ProfilePage extends State<ClientProfilePage> {
                           : const AssetImage(
                               'assets/images/default-user-image.png'))
                       : FileImage(File(_image!.path)),
-                  radius: 50,
+                  radius: 60,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 75.0, left: 75),
+                  padding: const EdgeInsets.only(top: 85.0, left: 85),
                   child: InkWell(
                     child: Container(
-                      height: 25,
-                      width: 25,
+                      height: 30,
+                      width: 30,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.black,
@@ -159,13 +161,9 @@ class _ProfilePage extends State<ClientProfilePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const Divider(
-                height: 5,
-                color: Colors.white,
-              ),
               Padding(
-                padding:
-                    const EdgeInsets.only(right: 18.0, left: 18, bottom: 18),
+                padding: const EdgeInsets.only(
+                    right: 18.0, left: 18, bottom: 18, top: 50),
                 child: SfCartesianChart(
                     title: ChartTitle(
                         borderColor: constants.buttonColor,

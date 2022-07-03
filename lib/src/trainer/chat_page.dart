@@ -64,98 +64,90 @@ class _TrainerTrainingPageState extends State<TrainerTrainingPage> {
       resizeToAvoidBottomInset: false,
       extendBody: true,
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text(
+          "Clients",
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Clients",
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ListView.builder(
-              itemCount: clients.length,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 16),
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final client = clients[index];
+        child: Padding(
+          padding: const EdgeInsets.only(top: 125.0),
+          child: ListView.builder(
+            itemCount: clients.length,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 16),
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final client = clients[index];
 
-                var user = clientsData
-                    .firstWhere((element) => element.id == client.user_id);
+              var user = clientsData
+                  .firstWhere((element) => element.id == client.user_id);
 
-                getTrainerPicture(user.picture);
-                return clients.isEmpty == true
-                    ? Center(
-                        child: Text('No clients available'),
-                      )
-                    : GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return ChatDetailPage(
-                                client_name: user.name,
-                                client_email: user.email,
-                                client_id: user.id,
-                                client_picture: user.picture,
-                                worker_id: user_id);
-                          }));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              left: 16, right: 16, top: 10, bottom: 10),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Row(
-                                  children: <Widget>[
-                                    CircleAvatar(
-                                      backgroundImage: user.picture == ""
-                                          ? NetworkImage(
-                                              'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                          : MemoryImage(imgBytes)
-                                              as ImageProvider,
-                                      maxRadius: 30,
-                                    ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              user.name,
-                                              style: TextStyle(fontSize: 23),
-                                            ),
-                                          ],
-                                        ),
+              getTrainerPicture(user.picture);
+              return clients.isEmpty == true
+                  ? Center(
+                      child: Text('No clients available'),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return ChatDetailPage(
+                              client_name: user.name,
+                              client_email: user.email,
+                              client_id: user.id,
+                              client_picture: user.picture,
+                              worker_id: user_id);
+                        }));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: 16, right: 16, top: 10, bottom: 10),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Row(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    backgroundImage: user.picture == ""
+                                        ? NetworkImage(
+                                            'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                        : MemoryImage(imgBytes)
+                                            as ImageProvider,
+                                    maxRadius: 30,
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            user.name,
+                                            style: TextStyle(fontSize: 23),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      );
-              },
-            )
-          ],
+                      ),
+                    );
+            },
+          ),
         ),
       ),
     );

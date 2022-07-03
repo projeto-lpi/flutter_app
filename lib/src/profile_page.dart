@@ -65,7 +65,7 @@ class _ProfilePage extends State<ProfilePage> {
             ? <Widget>[
                 IconButton(
                   icon: const Icon(Icons.check_outlined),
-                  color: Colors.white,
+                  color: constants.buttonColor,
                   tooltip: 'Save changes',
                   onPressed: () async {
                     List<int> imgBytes = await _image!.readAsBytes();
@@ -77,7 +77,7 @@ class _ProfilePage extends State<ProfilePage> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.settings, color: constants.buttonColor),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -88,7 +88,7 @@ class _ProfilePage extends State<ProfilePage> {
               ]
             : <Widget>[
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.settings, color: constants.buttonColor),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -140,7 +140,6 @@ class _ProfilePage extends State<ProfilePage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),

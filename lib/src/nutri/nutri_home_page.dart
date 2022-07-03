@@ -50,8 +50,7 @@ class _NutriHomePageState extends State<NutriHomePage> {
               repeatForever: false,
               animatedTexts: [
                 TypewriterAnimatedText('Hello $name',
-                    textStyle: TextStyle(
-                        fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                    textStyle: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),

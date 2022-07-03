@@ -325,14 +325,18 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
     return AlertDialog(
       title: Text(
-        "Start ${item.description} Challenge",
+        "Start ${item.description} challenge",
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.black),
       ),
       content: TextFormField(
+          style: TextStyle(
+            color: Colors.black,
+          ),
+          keyboardType: TextInputType.number,
           controller: _goalController,
           decoration: const InputDecoration(
-            border: UnderlineInputBorder(),
+            border: OutlineInputBorder(),
             labelText: 'Enter your goal',
           ),
           validator: (value) {

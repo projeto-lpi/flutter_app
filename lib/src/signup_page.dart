@@ -42,165 +42,151 @@ class _SignupPageState extends State<SignupPage> {
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          actions: [
-            BackButton(
-              onPressed: () async {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
-              },
-            )
-          ],
           elevation: 0,
           backgroundColor: Colors.transparent,
-        ),
-        body: InkWell(
-          child: Column(children: [
-            Container(
-              alignment: Alignment.center,
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                color: constants.bgColor,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 100.0),
-                child: Column(
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                          color: Colors.white,
-                        ),
-                        width: 300,
-                        height: 500,
-                        child: Column(children: [
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: DropdownButton(
-                                value: role,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                    fontFamily: "Cairo"),
-                                borderRadius: BorderRadius.circular(5),
-                                items: <DropdownMenuItem<String>>[
-                                  DropdownMenuItem(
-                                    child: Text("client".toUpperCase()),
-                                    value: "client".toUpperCase(),
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text("trainer".toUpperCase()),
-                                    value: "trainer".toUpperCase(),
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text("nutritionist".toUpperCase()),
-                                    value: "nutritionist".toUpperCase(),
-                                  ),
-                                ],
-                                onChanged: (String? selectedValue) {
-                                  setState(() {
-                                    role = selectedValue!;
-                                  });
-                                }),
-                          ),
-                          drawBody(),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                var name = _nameController.text;
-                                var email = _emailController.text;
-                                var password = _passwordController.text;
-                                var age = _ageController.text;
-                                var weight = _weightController.text;
-                                var height = _heightController.text;
-
-                                if (_validate_email != true) {
-                                  if (flag == 1) {
-                                    await attemptSignUpClient(
-                                        name,
-                                        email,
-                                        password,
-                                        age,
-                                        weight,
-                                        height,
-                                        (genderSwitch
-                                            ? gender = "male"
-                                            : gender = "female"),
-                                        role,
-                                        context);
-                                  } else if (flag == 0) {
-                                    attemptSignUpOthers(
-                                        name, email, password, role, context);
-                                  }
-
-                                  if (state == 1) {
-                                    SnackBar(
-                                      content:
-                                          Text('Account created successfully'),
-                                      duration: Duration(seconds: 1),
-                                    );
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => LoginPage()));
-                                  }
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: Text(
-                                'Submit'.toUpperCase(),
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              color: constants.buttonColor,
             ),
-          ]),
+          ),
+        ),
+        body: Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: constants.bgColor,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 150.0),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  width: 300,
+                  child: Column(children: [
+                    _DropdownMenu(),
+                    drawBody(),
+                  ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      var name = _nameController.text;
+                      var email = _emailController.text;
+                      var password = _passwordController.text;
+                      var age = _ageController.text;
+                      var weight = _weightController.text;
+                      var height = _heightController.text;
+
+                      if (_validate_email != true) {
+                        if (flag == 1) {
+                          await attemptSignUpClient(
+                              name,
+                              email,
+                              password,
+                              age,
+                              weight,
+                              height,
+                              (genderSwitch
+                                  ? gender = "male"
+                                  : gender = "female"),
+                              role,
+                              context);
+                        } else if (flag == 0) {
+                          attemptSignUpOthers(
+                              name, email, password, role, context);
+                        }
+
+                        if (state == 1) {
+                          SnackBar(
+                            content: Text('Account created successfully'),
+                            duration: Duration(milliseconds: 500),
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(200, 40),
+                      primary: constants.buttonColor,
+                    ),
+                    child: Text(
+                      'Submit'.toUpperCase(),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         ));
+  }
+
+  Padding _DropdownMenu() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: DropdownButton(
+          alignment: Alignment.center,
+          value: role,
+          style: TextStyle(fontSize: 15),
+          borderRadius: BorderRadius.circular(5),
+          items: <DropdownMenuItem<String>>[
+            DropdownMenuItem(
+              child: Text("client".toUpperCase()),
+              value: "client".toUpperCase(),
+            ),
+            DropdownMenuItem(
+              child: Text("trainer".toUpperCase()),
+              value: "trainer".toUpperCase(),
+            ),
+            DropdownMenuItem(
+              child: Text("nutritionist".toUpperCase()),
+              value: "nutritionist".toUpperCase(),
+            ),
+          ],
+          onChanged: (String? selectedValue) {
+            setState(() {
+              role = selectedValue!;
+            });
+          }),
+    );
   }
 
   drawBody() {
     if (role == 'CLIENT') {
       flag = 1;
-      return Padding(
-        padding: EdgeInsets.all(0),
-        child: Column(
+      return Container(
+        height: 400,
+        child: ListView(
+          padding: EdgeInsets.only(top: 0),
           children: [
-            drawFormField('Name', _nameController, Icons.person),
-            drawFormField('Email', _emailController, Icons.email),
-            drawFormField('Password', _passwordController, Icons.password),
-            drawFormField('Age', _ageController, Icons.calendar_month),
-            drawFormField('Weight', _weightController, Icons.balance),
-            drawFormField('Height', _heightController, Icons.height),
+            _NameInput(),
+            _EmailInput(),
+            _PasswordInput(),
+            _AgeInput(),
+            _WeightInput(),
+            _HeightInput(),
             Row(children: [
               Padding(
                 padding: const EdgeInsets.only(top: 0, left: 40),
                 child: Icon(
                   Icons.female_rounded,
-                  color: Colors.red,
+                  color: constants.buttonColor,
                 ),
               ),
               Transform.translate(
                 offset: Offset(2.5, 0),
                 child: Switch(
-                  activeColor: Colors.red,
+                  activeColor: constants.iconColor,
                   value: genderSwitch,
                   onChanged: (bool newValue) {
                     setState(() {
@@ -213,7 +199,7 @@ class _SignupPageState extends State<SignupPage> {
                 padding: const EdgeInsets.only(top: 0),
                 child: Icon(
                   Icons.male_rounded,
-                  color: Colors.red,
+                  color: constants.buttonColor,
                 ),
               ),
             ]),
@@ -222,70 +208,178 @@ class _SignupPageState extends State<SignupPage> {
       );
     } else if (role == 'NUTRITIONIST' || role == 'TRAINER') {
       flag = 0;
-      return Padding(
-        padding: EdgeInsets.all(0),
+      return Container(
+        height: 300,
         child: Column(
           children: [
-            drawFormField('Name', _nameController, Icons.person),
-            drawFormField('Email', _emailController, Icons.email),
-            drawFormField('Password', _passwordController, Icons.password),
+            _NameInput(),
+            _EmailInput(),
+            _PasswordInput(),
           ],
         ),
       );
     }
   }
 
-  Widget drawFormField(
-      String text, TextEditingController controller, IconData _icon) {
-    return Container(
-      width: MediaQuery.of(context).size.width * .63,
-      height: /* _validate_password ? 55 :*/ 35,
-      margin: EdgeInsets.only(top: 15),
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 50,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-        color: Colors.white,
-      ),
-      child: Row(
-        children: [
-          Icon(
-            _icon,
-            color: Colors.red,
+  Widget _NameInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _nameController,
+        decoration: InputDecoration(
+          errorText:
+              (_nameController.text == null || _nameController.text.isEmpty)
+                  ? 'Invalid name'
+                  : '',
+          labelText: 'Name',
+          prefixIcon: Icon(
+            Icons.person,
+            color: constants.buttonColor,
           ),
-          SizedBox(
-            width: 10,
-          ),
-          Flexible(
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                if (text == 'Email') {
-                  if (checkEmail(value) == false) {
-                    return 'Invalid email';
-                  }
-                }
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
 
-                return null;
-              },
-              controller: controller,
-              obscureText: text == 'Password' ? true : false,
-              decoration: InputDecoration(
-                /*  hintText:
-                                          _validate_password ? null : 'Password',
-                                      errorText: _validate_password
-                                          ? validatePassword(_passwordController.text)
-                                          : null,*/
-                hintText: text,
-                border: UnderlineInputBorder(),
-              ),
-            ),
+  Widget _EmailInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+          return (checkEmail(value) == false ? 'Invalid email' : null);
+        },
+        controller: _emailController,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.alternate_email,
+            color: constants.buttonColor,
           ),
-        ],
+          errorText: (checkEmail(_emailController.text) == false
+              ? 'Invalid email'
+              : ''),
+          labelText: 'Email',
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _PasswordInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.text,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _passwordController,
+        obscureText: true,
+        decoration: InputDecoration(
+          errorText: (_passwordController.text == null ||
+                  _passwordController.text.isEmpty)
+              ? 'Invalid password'
+              : '',
+          labelText: 'Password',
+          prefixIcon: Icon(
+            Icons.password,
+            color: constants.buttonColor,
+          ),
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _AgeInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _ageController,
+        decoration: InputDecoration(
+          errorText:
+              (_ageController.text == null || _ageController.text.isEmpty)
+                  ? 'Invalid age'
+                  : '',
+          labelText: 'Age',
+          prefixIcon: Icon(
+            Icons.calendar_month,
+            color: constants.buttonColor,
+          ),
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _WeightInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _weightController,
+        decoration: InputDecoration(
+          errorText:
+              (_weightController.text == null || _weightController.text.isEmpty)
+                  ? 'Invalid weight'
+                  : '',
+          labelText: 'Weight',
+          prefixIcon: Icon(
+            Icons.balance,
+            color: constants.buttonColor,
+          ),
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _HeightInput() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+        },
+        controller: _heightController,
+        decoration: InputDecoration(
+          errorText:
+              (_heightController.text == null || _heightController.text.isEmpty)
+                  ? 'Invalid height'
+                  : '',
+          labelText: 'Height',
+          prefixIcon: Icon(
+            Icons.height,
+            color: constants.buttonColor,
+          ),
+          border: OutlineInputBorder(),
+        ),
       ),
     );
   }

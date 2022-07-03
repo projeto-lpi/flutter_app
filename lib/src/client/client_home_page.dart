@@ -235,8 +235,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               repeatForever: false,
               animatedTexts: [
                 TypewriterAnimatedText('Hello $name',
-                    textStyle: TextStyle(
-                        fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                    textStyle: TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),

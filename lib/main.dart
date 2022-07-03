@@ -47,14 +47,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context)
-        .textTheme
-        .apply(bodyColor: textColor, displayColor: textColor);
+    final textTheme = Theme.of(context).textTheme.apply(
+        bodyColor: textColor, displayColor: textColor, fontFamily: 'Raleway');
 
     return MaterialApp(
       title: 'Healthier App',
       theme: ThemeData(
-        fontFamily: "Cairo",
+        fontFamily: "Raleway",
         canvasColor: bgColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: textTheme,

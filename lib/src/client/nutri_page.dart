@@ -61,7 +61,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: constants.buttonColor,
         title: appBarText(),
         centerTitle: true,
       ),
@@ -87,7 +87,9 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
           "content": _messageController.text
         }));
     if (response.statusCode == 200) {
-      setState(() {});
+      setState(() {
+        getMessages();
+      });
       print("send message ok");
     }
   }
@@ -301,77 +303,84 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     );
   }
 
-  Container _drawNutritionists() {
-    return Container(
-      alignment: Alignment.center,
-      height: MediaQuery.of(context).size.height * 0.6,
-      width: MediaQuery.of(context).size.width,
-      child: PageView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          final nutri = nutris[index];
-          getNutriPicture(nutri.picture);
-          return Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(35)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 150,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 30.0),
-                      child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: nutri.picture == ""
-                              ? const NetworkImage(
-                                      'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
-                                  as ImageProvider
-                              : MemoryImage(imgBytes) as ImageProvider),
+  Padding _drawNutritionists() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 100.0),
+      child: Container(
+        alignment: Alignment.center,
+        height: MediaQuery.of(context).size.height * 0.6,
+        width: MediaQuery.of(context).size.width,
+        child: PageView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final nutri = nutris[index];
+            getNutriPicture(nutri.picture);
+            return Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Card(
+                color: constants.buttonColor,
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 150,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30.0),
+                        child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: nutri.picture == ""
+                                ? const NetworkImage(
+                                        'https://digimedia.web.ua.pt/wp-content/uploads/2017/05/default-user-image.png')
+                                    as ImageProvider
+                                : MemoryImage(imgBytes) as ImageProvider),
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    nutri.name,
-                    style: const TextStyle(fontSize: 25.0, color: Colors.red),
-                  ),
-                  const SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    nutri.email,
-                    style: const TextStyle(fontSize: 15.0, color: Colors.red),
-                  ),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      elevation: 5,
-                      primary: Colors.white,
+                    const SizedBox(
+                      height: 5.0,
                     ),
-                    label: const Text('Add Trainer'),
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _showDialog(nutri, context),
-                      );
-                    },
-                  )
-                ],
+                    Text(
+                      nutri.name,
+                      style: const TextStyle(
+                        fontSize: 25.0,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      nutri.email,
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30.0,
+                    ),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(200, 40),
+                        primary: constants.bgColor,
+                      ),
+                      label: const Text('Add Nutritionist'),
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _showDialog(nutri, context),
+                        );
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-        itemCount: nutris.length,
+            );
+          },
+          itemCount: nutris.length,
+        ),
       ),
     );
   }
@@ -383,7 +392,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
   Widget _showDialog(Nutritionists item, context) {
     Widget yesButton = TextButton(
         style: TextButton.styleFrom(
-            primary: Colors.white, backgroundColor: Colors.red),
+            primary: Colors.white, backgroundColor: constants.bgColor),
         child: const Text(
           "Yes",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -396,7 +405,7 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     Widget noButton = TextButton(
       style: TextButton.styleFrom(
         backgroundColor: Colors.white,
-        primary: Colors.red,
+        primary: constants.bgColor,
       ),
       child: const Text(
         "No",
@@ -410,10 +419,12 @@ class _ClientNutriPageState extends State<ClientNutriPage> {
     return AlertDialog(
       title: const Text(
         "Add Nutritionist",
+        style: TextStyle(color: Colors.black),
         textAlign: TextAlign.center,
       ),
       content: const Text(
           "Are you sure that you want to add this nutritionist?",
+          style: TextStyle(color: Colors.black),
           textAlign: TextAlign.center),
       actions: <Widget>[
         Row(

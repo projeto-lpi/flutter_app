@@ -55,7 +55,12 @@ dependencies:
   shared_preferences: ^2.0.15
   collection: ^1.15.0
   bubble: ^1.2.1
+  flutter_launcher_icons: ^0.9.3
 
+flutter_icons:
+    android: "launcher_icon"
+    ios: false
+    image_path: "assets/images/splash_logo.png"
 
 dev_dependencies:
   flutter_test:
@@ -100,14 +105,14 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Cairo
+    - family: Raleway
       fonts:
-        - asset: assets/fonts/Cairo-Regular.ttf
-        - asset: assets/fonts/Cairo-SemiBold.ttf
+        - asset: assets/fonts/Raleway/static/Raleway-Regular.ttf
+        - asset: assets/fonts/Raleway/static/Raleway-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Cairo-Bold.ttf
+        - asset: assets/fonts/Raleway/static/Raleway-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Cairo-Black.ttf
+        - asset: assets/fonts/Raleway/static/Raleway-Black.ttf
           weight: 900
   #   - family: Trajan Pro
   #     fonts:

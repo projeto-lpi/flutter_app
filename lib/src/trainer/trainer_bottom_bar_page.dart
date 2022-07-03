@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:healthier_app/src/profile_page.dart';
 import 'package:healthier_app/src/trainer/chat_page.dart';
 import 'package:healthier_app/src/trainer/trainer_home_page.dart';
+import 'package:healthier_app/src/utils/constants.dart';
 import 'package:healthier_app/src/widgets/custom_animated_bottom_bar.dart';
 
 class TrainerMyHomePage extends StatefulWidget {
@@ -39,6 +40,7 @@ class _TrainerMyHomePageState extends State<TrainerMyHomePage> {
 
   Widget _buildBottomBar() {
     return CustomAnimatedBottomBar(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       containerHeight: 70,
       backgroundColor: Colors.white,
       selectedIndex: _currentIndex,
@@ -50,14 +52,14 @@ class _TrainerMyHomePageState extends State<TrainerMyHomePage> {
         BottomNavyBarItem(
           icon: Icon(Icons.directions_run_rounded),
           title: Text('Training'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),
         BottomNavyBarItem(
           icon: Icon(Icons.person),
           title: Text('Profile'),
-          activeColor: Colors.red,
+          activeColor: buttonColor,
           inactiveColor: _inactiveColor,
           textAlign: TextAlign.center,
         ),

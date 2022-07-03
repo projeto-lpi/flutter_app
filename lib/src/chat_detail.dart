@@ -102,13 +102,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           "content": _messageController.text
         }));
     if (response.statusCode == 200) {
+      setState(() {
+        getMessages();
+      });
       print("send message ok");
     }
   }
 
   getMessages() async {
-    print(widget.worker_id);
-    print(widget.client_id);
     String url =
         "http://$ip:8081/api/v1/message/${widget.worker_id}/${widget.client_id}";
     var response = await http.get(Uri.parse(url));
@@ -352,7 +353,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           child: Center(
                             child: Text(
                               'No messages available',
-                              style: TextStyle(color: constants.bgColor),
                             ),
                           )),
                       Align(

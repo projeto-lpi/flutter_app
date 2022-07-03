@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:healthier_app/src/client/client_home_page.dart';
+import 'package:healthier_app/src/utils/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -49,7 +50,8 @@ class _RunningPageState extends State<RunningPage> {
 
   Future _calculateDistance() async {
     final GoogleMapController controller = await _controller.future;
-
+    LocationPermission permission;
+    permission = await Geolocator.requestPermission();
     _positionStream = Geolocator.getPositionStream(
             locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
         .listen((Position position) async {
@@ -100,202 +102,189 @@ class _RunningPageState extends State<RunningPage> {
     if (defaultTargetPlatform == TargetPlatform.android) {
       AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
     }
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          backgroundColor: Colors.black87,
-          leading: BackButton(
-            color: Colors.white,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )),
-      body: Stack(children: [
-        Container(
-          height: MediaQuery.of(context).size.height * .6,
-          width: double.infinity,
-          child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-                target: LatLng(43.2, -8.3),
-                zoom: cameraZoom,
-                tilt: cameraTilt,
-                bearing: cameraBearing),
-            myLocationEnabled: true,
-            compassEnabled: false,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            buildingsEnabled: false,
-            trafficEnabled: false,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-            mapType: MapType.normal,
+    return StreamBuilder<int>(
+        stream: _stopWatchTimer.rawTime,
+        initialData: _stopWatchTimer.rawTime.value,
+        builder: (context, snapshot) {
+          final value = snapshot.data!;
+          final displayTime = StopWatchTimer.getDisplayTime(
+            value,
+            hours: false,
+          );
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            extendBody: true,
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: _Info(displayTime, context),
+                centerTitle: true,
+                leading: BackButton(
+                  color: buttonColor,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )),
+            body: Stack(children: [
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(43.2, -8.3),
+                      zoom: cameraZoom,
+                      tilt: cameraTilt,
+                      bearing: cameraBearing),
+                  myLocationEnabled: true,
+                  compassEnabled: false,
+                  myLocationButtonEnabled: false,
+                  mapToolbarEnabled: false,
+                  zoomControlsEnabled: false,
+                  buildingsEnabled: false,
+                  trafficEnabled: false,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  mapType: MapType.normal,
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * .4,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(50),
+                        topLeft: Radius.circular(50)),
+                  ),
+                  child: _BuildButtons(context, displayTime),
+                ),
+              ),
+            ]),
+          );
+        });
+  }
+
+  Column _Info(String displayTime, BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Text(
+          'Distance: ${(_totalDistance / 1000).toStringAsFixed(2)}km',
+          style: TextStyle(
+            color: buttonColor,
+            fontSize: 20,
           ),
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * .4,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(50), topLeft: Radius.circular(50)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                /// Display stop watch time
-                StreamBuilder<int>(
-                  stream: _stopWatchTimer.rawTime,
-                  initialData: _stopWatchTimer.rawTime.value,
-                  builder: (context, snap) {
-                    final value = snap.data!;
-                    final displayTime = StopWatchTimer.getDisplayTime(
-                      value,
-                      hours: false,
-                    );
-                    return Column(
-                      children: <Widget>[
-                        Text(
-                          'Distance: ${(_totalDistance / 1000).toStringAsFixed(2)}km',
-                          style: TextStyle(color: Colors.white, fontSize: 30),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                displayTime.substring(0, 6),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 40,
-                                    fontFamily: 'Cairo',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15.0),
-                                child: Text(
-                                  displayTime.substring(6, 8),
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontFamily: 'Cairo',
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    _stopWatchTimer.onExecute
-                                        .add(StopWatchExecute.start);
-                                    setState(() {
-                                      _calculateDistance();
-                                    });
-                                  },
-                                  child: const Icon(Icons.play_arrow_rounded,
-                                      color: Colors.white),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.red,
-                                      shape: CircleBorder(),
-                                      fixedSize: Size.fromHeight(50)),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    _stopWatchTimer.onExecute
-                                        .add(StopWatchExecute.stop);
-                                    setState(() {
-                                      _positionStream.pause();
-                                      if (_positionStream.isPaused) {
-                                        print('distance track paused');
-                                      }
-                                    });
-                                  },
-                                  child: const Icon(Icons.stop_rounded,
-                                      color: Colors.white),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.red,
-                                      shape: CircleBorder(),
-                                      fixedSize: Size.fromHeight(50)),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    _stopWatchTimer.onExecute
-                                        .add(StopWatchExecute.reset);
-                                    setState(() {
-                                      _positionStream.cancel();
-                                      print('distance track canceled/reseted');
-                                      _totalDistance = 0;
-                                      locations.clear();
-                                    });
-                                  },
-                                  child: const Icon(Icons.replay_rounded,
-                                      color: Colors.white),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.red,
-                                      shape: CircleBorder(),
-                                      fixedSize: Size.fromHeight(50)),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            _showDialog(
-                                                'https://1.bp.blogspot.com/-nySaGEHWibE/W4rlACo-DMI/AAAAAAAC-vg/hOx4H5QBdxMhtp3eIkQLre1Q6RaFpe2KQCLcBGAs/s1600/ta71.gif',
-                                                'Done!',
-                                                displayTime,
-                                                _totalDistance.toInt(),
-                                                context));
-                                    updateDistance(_totalDistance.toInt());
-                                    _stopWatchTimer.onExecute
-                                        .add(StopWatchExecute.reset);
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                  text: displayTime.substring(0, 6),
+                  style: TextStyle(fontSize: 23, color: buttonColor)),
+              TextSpan(
+                text: displayTime.substring(6, 8),
+                style: TextStyle(fontSize: 16, color: buttonColor),
+              )
+            ],
+          ),
+          style: const TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
 
-                                    setState(() {
-                                      _positionStream.cancel();
-                                      locations.clear();
-                                    });
-                                  },
-                                  child: const Icon(Icons.check_rounded,
-                                      color: Colors.white),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.red,
-                                      shape: CircleBorder(),
-                                      fixedSize: Size.fromHeight(50)),
-                                ),
-                              ),
-                            ])
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
+  Align _BuildButtons(BuildContext context, String displayTime) {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Column(children: [
+        //Start button
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: ElevatedButton(
+            onPressed: () async {
+              _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+              setState(() {
+                _calculateDistance();
+              });
+            },
+            child: const Icon(Icons.play_arrow_rounded, color: buttonColor),
+            style: ElevatedButton.styleFrom(
+                primary: bgColor,
+                shape: CircleBorder(),
+                fixedSize: Size.fromHeight(50)),
+          ),
+        ),
+        //Pause button
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ElevatedButton(
+            onPressed: () async {
+              _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+              setState(() {
+                _positionStream.pause();
+                if (_positionStream.isPaused) {
+                  print('distance track paused');
+                }
+              });
+            },
+            child: const Icon(Icons.stop_rounded, color: buttonColor),
+            style: ElevatedButton.styleFrom(
+                primary: bgColor,
+                shape: CircleBorder(),
+                fixedSize: Size.fromHeight(50)),
+          ),
+        ),
+        //Reset Button
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ElevatedButton(
+            onPressed: () async {
+              _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+              setState(() {
+                _positionStream.cancel();
+                print('distance track canceled/reseted');
+                _totalDistance = 0;
+                locations.clear();
+              });
+            },
+            child: const Icon(Icons.replay_rounded, color: buttonColor),
+            style: ElevatedButton.styleFrom(
+                primary: bgColor,
+                shape: CircleBorder(),
+                fixedSize: Size.fromHeight(50)),
+          ),
+        ),
+        //Finish Button
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ElevatedButton(
+            onPressed: () async {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => _showDialog(
+                      'https://1.bp.blogspot.com/-nySaGEHWibE/W4rlACo-DMI/AAAAAAAC-vg/hOx4H5QBdxMhtp3eIkQLre1Q6RaFpe2KQCLcBGAs/s1600/ta71.gif',
+                      'Done!',
+                      displayTime,
+                      _totalDistance.toInt(),
+                      context));
+              updateDistance(_totalDistance.toInt());
+              _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+
+              setState(() {
+                _positionStream.cancel();
+                locations.clear();
+              });
+            },
+            child: const Icon(Icons.check_rounded, color: buttonColor),
+            style: ElevatedButton.styleFrom(
+                primary: bgColor,
+                shape: CircleBorder(),
+                fixedSize: Size.fromHeight(50)),
           ),
         ),
       ]),
@@ -327,7 +316,7 @@ class _RunningPageState extends State<RunningPage> {
     print(distance);
     Widget doneButton = TextButton(
         style: TextButton.styleFrom(
-            primary: Colors.white, backgroundColor: Colors.red),
+            primary: Colors.white, backgroundColor: bgColor),
         child: Text(
           text,
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -341,7 +330,7 @@ class _RunningPageState extends State<RunningPage> {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25))),
+            borderRadius: BorderRadius.all(Radius.circular(5))),
         content: Container(
           height: 255,
           width: 200,
@@ -361,9 +350,9 @@ class _RunningPageState extends State<RunningPage> {
               Text(
                 'Congrats!\nYou ran $distance m in $time ',
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black),
                 textAlign: TextAlign.center,
               ),
             ],
